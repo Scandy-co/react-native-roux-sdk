@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
+		419762342486F92400A94D4C /* RouxViewer.h in Sources */ = {isa = PBXBuildFile; fileRef = 419762332486F92400A94D4C /* RouxViewer.h */; };
+		419762362486F95000A94D4C /* RouxViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 419762352486F95000A94D4C /* RouxViewer.mm */; };
+		419762382486FC6700A94D4C /* RCTRouxManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 419762372486FC6700A94D4C /* RCTRouxManager.mm */; };
 		5E555C0D2413F4C50049A1A2 /* RouxSdk.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RouxSdk.mm */; };
 /* End PBXBuildFile section */
 
@@ -25,7 +27,9 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRouxSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRouxSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
-
+		419762332486F92400A94D4C /* RouxViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RouxViewer.h; sourceTree = "<group>"; };
+		419762352486F95000A94D4C /* RouxViewer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RouxViewer.mm; sourceTree = "<group>"; };
+		419762372486FC6700A94D4C /* RCTRouxManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTRouxManager.mm; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RouxSdk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouxSdk.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RouxSdk.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RouxSdk.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,7 +56,9 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-
+				419762372486FC6700A94D4C /* RCTRouxManager.mm */,
+				419762352486F95000A94D4C /* RouxViewer.mm */,
+				419762332486F92400A94D4C /* RouxViewer.h */,
 				B3E7B5881CC2AC0600A0062D /* RouxSdk.h */,
 				B3E7B5891CC2AC0600A0062D /* RouxSdk.mm */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -116,8 +122,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
+				419762362486F95000A94D4C /* RouxViewer.mm in Sources */,
+				419762382486FC6700A94D4C /* RCTRouxManager.mm in Sources */,
 				5E555C0D2413F4C50049A1A2 /* RouxSdk.mm in Sources */,
+				419762342486F92400A94D4C /* RouxViewer.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

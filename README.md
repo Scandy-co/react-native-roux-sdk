@@ -1,8 +1,14 @@
 # react-native-roux-sdk
 
-A React Native wrapper around the Roux 3D scanning SDK for iOS.  Provides access to 3D meshing, measuring, editing tools, etc.  https://scandy.co/apps/roux
+A React Native wrapper around the Roux 3D scanning SDK for iOS. Provides access to 3D meshing, measuring, editing tools, etc. https://scandy.co/apps/roux
 
 ## Installation
+
+```sh
+yarn add react-native-roux-sdk
+```
+
+Or
 
 ```sh
 npm install react-native-roux-sdk
@@ -11,7 +17,7 @@ npm install react-native-roux-sdk
 ## Usage
 
 ```js
-import RouxSdk from "react-native-roux-sdk";
+import RouxSdk from 'react-native-roux-sdk';
 
 // ...
 
