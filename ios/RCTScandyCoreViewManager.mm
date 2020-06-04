@@ -31,14 +31,14 @@
 #import <ScandyCore/ScandyCoreManager.h>
 
 @interface
-RCTRouxViewManager ()<ScandyCoreManagerDelegate>
+RCTScandyCoreViewManager ()<ScandyCoreManagerDelegate>
 
 @property (nonatomic, strong) ScanView* scanView;
 @property (nonatomic, strong) NSString* licenseString;
 
 @end
 
-@implementation RCTRouxViewManager
+@implementation RCTScandyCoreViewManager
 
 @synthesize bridge = _bridge;
 

@@ -6,7 +6,7 @@ export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
-    RouxSdk.multiply(3, 7).then(setResult);
+    RouxSdk.multiply(4, 7).then(setResult);
   }, []);
 
   return (

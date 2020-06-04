@@ -1,11 +1,3 @@
-//
-//  RCTRouxManager.m
-//  RouxSdk
-//
-//  Created by George Farro on 6/2/20.
-//  Copyright © 2020 Facebook. All rights reserved.
-//
-
 /****************************************************************************\
  * Copyright (C) 2014-2020 Scandy
  *
@@ -17,45 +9,37 @@
  \****************************************************************************/
 
 #include <scandy.h>
+
 #include <scandy/utilities/FileOps.h>
 #include <scandy/utilities/eigen_vector_math.h>
+
 #include <scandy/core/IScandyCore.h>
 #include <scandy/core/Status.h>
 
-#import "RCTRouxManager.h"
-#import "RouxViewer.h"
+// imports must come second
+#import "RCTScandyCoreManager.h"
+#import "ScanView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
-
 #import <ScandyCore/ScandyCore.h>
 #import <ScandyCore/ScandyCoreManager.h>
 
 using namespace scandy::utilities;
 
 @interface
-RCTRouxManager ()<ScandyCoreManagerDelegate>
+RCTScandyCoreManager ()
 
-@property (nonatomic, strong) EAGLContext* context;
 @property (nonatomic, strong) NSString* licenseString;
-@property (nonatomic) scandy::core::ScannerType scannerType;
-@property (nonatomic, strong) RouxViewer* scanView;
-@property (nonatomic) bool isTracking;
-@property (nonatomic) float trackingCost;
-@property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
-@property (nonatomic) bool isScreenRecording;
-@property (nonatomic) int screenRecordCount;
-@property (nonatomic) std::vector<std::string> screen_record_images;
 
 @end
 
-@implementation RCTRouxManager
-RCTBridge* _bridge;
+@implementation RCTScandyCoreManager
 
-RCT_EXPORT_MODULE(RouxManager);
+RCT_EXPORT_MODULE(ScandyCoreManager);
 
 + (void)setLicense
 {
@@ -403,7 +387,7 @@ RCT_EXPORT_METHOD(exportVolumetricVideo
 
       if (props[@"decimate"]) {
         opts.m_decimate = [props[@"decimate"] floatValue];
-      }
+      } 
       if (props[@"texture_quality"]) {
         opts.m_texture_quality = [props[@"texture_quality"] floatValue];
       }
