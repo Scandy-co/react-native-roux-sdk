@@ -341,6 +341,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "RouxSdkExample-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				VALID_ARCHS = arm64;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -402,6 +403,7 @@
 				PRODUCT_NAME = RouxSdkExample;
 				SWIFT_OBJC_BRIDGING_HEADER = "RouxSdkExample-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				VALID_ARCHS = arm64;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

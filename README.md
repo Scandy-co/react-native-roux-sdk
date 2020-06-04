@@ -24,6 +24,13 @@ import RouxSdk from 'react-native-roux-sdk';
 const result = await RouxSdk.multiply(3, 7);
 ```
 
+## Notes on building
+
+In Build Settings for your project including this library, please change Build Settings to:
+
+Bitcode Enabled: false
+Valid Architectures: arm64
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
