@@ -10,6 +10,7 @@
 		419762342486F92400A94D4C /* RouxViewer.h in Sources */ = {isa = PBXBuildFile; fileRef = 419762332486F92400A94D4C /* RouxViewer.h */; };
 		419762362486F95000A94D4C /* RouxViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 419762352486F95000A94D4C /* RouxViewer.mm */; };
 		419762382486FC6700A94D4C /* RCTRouxManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 419762372486FC6700A94D4C /* RCTRouxManager.mm */; };
+		419762562488B1BE00A94D4C /* RCTRouxViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 419762552488B1BE00A94D4C /* RCTRouxViewManager.m */; };
 		5E555C0D2413F4C50049A1A2 /* RouxSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RouxSdk.m */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,8 @@
 		419762352486F95000A94D4C /* RouxViewer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RouxViewer.mm; sourceTree = "<group>"; };
 		419762372486FC6700A94D4C /* RCTRouxManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTRouxManager.mm; sourceTree = "<group>"; };
 		4197625424889A9900A94D4C /* RCTRouxManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRouxManager.h; sourceTree = "<group>"; };
+		419762552488B1BE00A94D4C /* RCTRouxViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTRouxViewManager.m; sourceTree = "<group>"; };
+		419762582488B20000A94D4C /* RCTRouxViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTRouxViewManager.h; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RouxSdk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouxSdk.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RouxSdk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouxSdk.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,6 +60,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				419762582488B20000A94D4C /* RCTRouxViewManager.h */,
+				419762552488B1BE00A94D4C /* RCTRouxViewManager.m */,
 				4197625424889A9900A94D4C /* RCTRouxManager.h */,
 				419762372486FC6700A94D4C /* RCTRouxManager.mm */,
 				419762352486F95000A94D4C /* RouxViewer.mm */,
@@ -126,6 +131,7 @@
 			files = (
 				419762362486F95000A94D4C /* RouxViewer.mm in Sources */,
 				419762382486FC6700A94D4C /* RCTRouxManager.mm in Sources */,
+				419762562488B1BE00A94D4C /* RCTRouxViewManager.m in Sources */,
 				5E555C0D2413F4C50049A1A2 /* RouxSdk.m in Sources */,
 				419762342486F92400A94D4C /* RouxViewer.h in Sources */,
 			);
