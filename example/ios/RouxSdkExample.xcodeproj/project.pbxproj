@@ -292,7 +292,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 8777VFSA3J;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "/Users/bundaloose/Code/Scandy/@scandy/react-native-roux-sdk/example/ios/Frameworks/**";
+				FRAMEWORK_SEARCH_PATHS = "$SRCROOT/Frameworks/";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -323,7 +323,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/react-native-roux-sdk\"",
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
-					"/Users/bundaloose/Code/Scandy/@scandy/react-native-roux-sdk/example/ios/Frameworks/ScandyCore.framework/Headers",
+					"$SRCROOT/Frameworks/ScandyCore.framework/Headers",
 				);
 				INFOPLIST_FILE = RouxSdkExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -355,7 +355,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8777VFSA3J;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = "/Users/bundaloose/Code/Scandy/@scandy/react-native-roux-sdk/example/ios/Frameworks/**";
+				FRAMEWORK_SEARCH_PATHS = "$SRCROOT/Frameworks/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -386,7 +386,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/react-native-roux-sdk\"",
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
-					"/Users/bundaloose/Code/Scandy/@scandy/react-native-roux-sdk/example/ios/Frameworks/ScandyCore.framework/Headers",
+					"$SRCROOT/Frameworks/ScandyCore.framework/Headers",
 				);
 				INFOPLIST_FILE = RouxSdkExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
