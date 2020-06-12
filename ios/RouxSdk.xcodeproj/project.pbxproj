@@ -59,9 +59,9 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				41992DBB24899567001820FF /* RCTScandyCoreManager.h */,
 				41992DBE24899975001820FF /* ScanView.h */,
 				41992DBF24899975001820FF /* ScanView.mm */,
+				41992DBB24899567001820FF /* RCTScandyCoreManager.h */,
 				41992DB924899567001820FF /* RCTScandyCoreManager.mm */,
 				41992DBA24899567001820FF /* RCTScandyCoreViewManager.h */,
 				41992DB824899567001820FF /* RCTScandyCoreViewManager.mm */,

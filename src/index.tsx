@@ -1,9 +1,287 @@
-import { NativeModules } from 'react-native';
+import * as React from 'react';
+import {
+  StyleSheet,
+  View,
+  NativeModules,
+  requireNativeComponent,
+  ViewStyle,
+  StyleProp,
+} from 'react-native';
 
-type RouxSdkType = {
-  multiply(a: number, b: number): Promise<number>;
+const { ScandyCoreManager } = NativeModules;
+
+const RCTScandyCoreView = requireNativeComponent('RCTScandyCoreView');
+
+type Props = {
+  /**
+   * when Core has an issue mounting natively
+   */
+  onError?: Function;
+  /**
+   * called once Core has a valid render context
+   * IMPORTANT - don't call any functions prior to this being called
+   */
+  onVisualizerReady?: Function;
+  /**
+   * 2d preview and depth volume stream is now displayed in
+   * the Core visualizer
+   */
+  onPreviewStart?: Function;
+  /**
+   * Core began live meshing
+   */
+  onScannerStart?: Function;
+  /**
+   * Core finished live meshing
+   */
+  onScannerStop?: Function;
+  /**
+   * Mesh completed and is now visualized
+   */
+  onGenerateMesh?: Function;
+  /**
+   * mesh has saved successfully
+   */
+  onSaveMesh?: Function;
+  onExportVolumetricVideo?: Function;
+  onMeshLoaded: Function;
+  onScanStateChanged?: Function;
+  onClientConnected?: Function;
+  onHostDiscovered?: Function;
+  onVoxelSizeChanged?: Function;
+  onVolumeMemoryDidUpdate?: Function;
+  onVidSavedToCamRoll?: Function;
+  scanMode: Boolean;
+  onLayout?: Function;
+  meshPath?: string;
+  style?: StyleProp<ViewStyle>;
 };
 
-const { RouxSdk } = NativeModules;
+class RNScandyCoreView extends React.Component<Props> {
+  static defaultProps = {
+    onError: () => console.log('ScandyCore: Errored'),
+    onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
+    onPreviewStart: () => console.log('ScandyCore: Preview Started'),
+    onScannerStart: () => console.log('ScandyCore: Scanner Started'),
+    onScannerStop: () => console.log('ScandyCore: Scanner Stoped'),
+    onGenerateMesh: () => console.log('ScandyCore: Generated Mesh'),
+    onSaveMesh: () => console.log('ScandyCore: Saved Mesh'),
+    onMeshLoaded: () => console.log('Scandy Core: Mesh Loaded'),
+    onScanStateChanged: (state: string) =>
+      console.log('Scandy Core: State Changed ', state),
+    onClientConnected: () => console.log('ScandyCore: Client Connected'),
+    onHostDiscovered: () => console.log('Scandy Core: Host Discovered'),
+    scanMode: false,
+  };
 
-export default RouxSdk as RouxSdkType;
+  componentDidMount() {
+    // console.log('ScandyCoreView mounting')
+  }
+
+  componentWillUnmount() {
+    // Make sure the scanner doesn't keep running in the background
+    ScandyCoreManager.uninitializeScanner();
+    // console.log('ScandyCoreView un mounting')
+  }
+
+  startScan = () =>
+    ScandyCoreManager.startScan().catch((err: string) => this._onError(err));
+
+  stopScan = () =>
+    ScandyCoreManager.stopScan().catch((err: string) => this._onError(err));
+
+  setSize = (val) =>
+    ScandyCoreManager.updateScanSize(val).catch((err: string) =>
+      this._onError(err)
+    );
+
+  setVoxelSize = (val) => {
+    ScandyCoreManager.updateVoxelSize(val)
+      .then(() => {
+        if (this.props.onVoxelSizeChanged) {
+          this.props.onVoxelSizeChanged();
+        }
+      })
+      .catch((err: string) => {
+        this._onError(err);
+      });
+  };
+
+  setNoiseFilter = (val) =>
+    ScandyCoreManager.updateNoiseFilter(val).catch((err: string) =>
+      this._onError(err)
+    );
+
+  setEnableColor = (enable: boolean) =>
+    ScandyCoreManager.setEnableColor(enable).catch((err: string) =>
+      this._onError(err)
+    );
+
+  loadMesh = (path: string) => {
+    // const { meshPath } = this.props;
+    ScandyCoreManager.loadMesh({ meshPath: path })
+      .then(() => {
+        if (this.props.onMeshLoaded) {
+          this.props.onMeshLoaded();
+        }
+      })
+      .catch((err: string) => {
+        this._onError(err);
+      });
+  };
+
+  saveMesh = (filePath = null) =>
+    ScandyCoreManager.saveMesh(filePath)
+      // .then(({ meshPath, previewImagePath }) => {
+      // We could do something with the new meshPath and previewImagePath if we wanted...
+      // })
+      .catch((err: string) => {
+        this._onError(err);
+      });
+
+  _onError = (err: string) => {
+    if (this.props.onError) {
+      this.props.onError(err);
+    }
+    console.log(err);
+  };
+
+  _onVisualizerReady = ({ nativeEvent }) => {
+    console.log('on vis ready');
+    if (this.props.onVisualizerReady) {
+      this.props.onVisualizerReady(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onPreviewStart = ({ nativeEvent }) => {
+    if (this.props.onPreviewStart) {
+      this.props.onPreviewStart(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onScannerStart = ({ nativeEvent }) => {
+    if (this.props.onScannerStart) {
+      this.props.onScannerStart(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onScannerStop = ({ nativeEvent }) => {
+    if (this.props.onScannerStop) {
+      this.props.onScannerStop(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onGenerateMesh = ({ nativeEvent }) => {
+    if (this.props.onGenerateMesh) {
+      this.props.onGenerateMesh(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onSaveMesh = ({ nativeEvent }) => {
+    if (this.props.onSaveMesh) {
+      this.props.onSaveMesh(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onExportVolumetricVideo = ({ nativeEvent }) => {
+    if (this.props.onExportVolumetricVideo) {
+      this.props.onExportVolumetricVideo(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onClientConnected = ({ nativeEvent }) => {
+    if (this.props.onClientConnected) {
+      this.props.onClientConnected(nativeEvent.host);
+    }
+  };
+
+  _onHostDiscovered = ({ nativeEvent }) => {
+    if (this.props.onHostDiscovered) {
+      this.props.onHostDiscovered(nativeEvent.host);
+    }
+  };
+
+  _onVolumeMemoryDidUpdate = (dict) => {
+    if (this.props.onVolumeMemoryDidUpdate) {
+      this.props.onVolumeMemoryDidUpdate(dict.nativeEvent.percent_full);
+    }
+  };
+
+  _updateCoreState = () => {
+    ScandyCoreManager.getCurrentScanState().then((STATE: string) => {
+      if (this.props.onScanStateChanged) {
+        this.props.onScanStateChanged(STATE);
+      }
+    });
+  };
+
+  _onVidSavedToCamRoll = ({ nativeEvent }) => {
+    if (this.props.onVidSavedToCamRoll) {
+      this.props.onVidSavedToCamRoll(nativeEvent);
+    }
+  };
+
+  _startPreview = () => {
+    ScandyCoreManager.startPreview().then(() => {
+      if (this.props.onPreviewStart) {
+        this.props.onPreviewStart();
+      }
+    });
+  };
+
+  render() {
+    const { style } = this.props;
+    return (
+      <View
+        style={StyleSheet.absoluteFill}
+        onLayout={(e) => {
+          /**
+           * NOTE: tell Scandy Core to render to prevent black screens.
+           * NOTE FROM GEORGE: does this work?
+           */
+          if (this.props.onLayout) {
+            this.props.onLayout(e);
+          }
+          requestAnimationFrame(() => {
+            // ScandyCoreView.render()
+          });
+        }}
+      >
+        <RCTScandyCoreView
+          style={style || StyleSheet.absoluteFill}
+          onError={this._onError}
+          onVisualizerReady={this._onVisualizerReady}
+          onPreviewStart={this._onPreviewStart}
+          onScannerStart={this._onScannerStart}
+          onScannerStop={this._onScannerStop}
+          onGenerateMesh={this._onGenerateMesh}
+          onSaveMesh={this._onSaveMesh}
+          onExportVolumetricVideo={this._onExportVolumetricVideo}
+          onClientConnected={this._onClientConnected}
+          onHostDiscovered={this._onHostDiscovered}
+          scanMode={this.props.scanMode}
+          onVolumeMemoryDidUpdate={this._onVolumeMemoryDidUpdate}
+          onVidSavedToCamRoll={this._onVidSavedToCamRoll}
+        />
+        {this.props.children}
+      </View>
+    );
+  }
+}
+
+// import { NativeModules } from 'react-native';
+
+// type RouxSdkType = {
+//   multiply(a: number, b: number): Promise<number>;
+// };
+
+// const { RouxSdk } = NativeModules;
+
+export default RNScandyCoreView;

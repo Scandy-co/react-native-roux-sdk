@@ -4,7 +4,7 @@ import RouxSdk from 'react-native-roux-sdk';
 
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
-
+  console.log(RouxSdk);
   React.useEffect(() => {
     RouxSdk.multiply(4, 7).then(setResult);
   }, []);
