@@ -15,6 +15,8 @@
 
 #include <scandy/core/IScandyCore.h>
 #include <scandy/core/Status.h>
+#include <scandy/core/ScannerType.h>
+#include <scandy/core/ScanState.h>
 
 // imports must come second
 #import "RCTScandyCoreManager.h"
@@ -288,9 +290,7 @@ RCT_EXPORT_METHOD(stopScan
     if (stopStatus == scandy::core::Status::SUCCESS) {
       return resolve(nil);
     } else {
-      auto reason = [[NSString alloc]
-        initWithFormat:@"%s",
-                       scandy::core::getStatusString(stopStatus).c_str()];
+      auto reason = [NSString stringWithUTF8String:getStatusStr(stopStatus)];
       return reject(reason, reason, nil);
     }
   });
@@ -427,6 +427,40 @@ RCT_EXPORT_METHOD(getCurrentScanState
       reject(@"", @"No Scandy Core object", nil);
     }
   });
+}
+
+- (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
+{
+  NSString* result = nil;
+
+  switch (scanState) {
+    case scandy::core::ScanState::INITIALIZED:
+      result = @"INITIALIZED";
+      break;
+    case scandy::core::ScanState::PREVIEWING:
+      result = @"PREVIEWING";
+      break;
+    case scandy::core::ScanState::SCANNING:
+      result = @"SCANNING";
+      break;
+    case scandy::core::ScanState::STOPPED:
+      result = @"STOPPED";
+      break;
+
+    case scandy::core::ScanState::MESHING:
+      result = @"MESHING";
+      break;
+    case scandy::core::ScanState::VIEWING:
+      result = @"VIEWING";
+      break;
+    case scandy::core::ScanState::NONE:
+      result = @"NONE";
+      break;
+    default:
+      result = @"Unexpected ScanState.";
+  }
+
+  return result;
 }
 
 @end

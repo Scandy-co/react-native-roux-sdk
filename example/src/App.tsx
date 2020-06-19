@@ -1,25 +1,33 @@
 import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import RouxSdk from 'react-native-roux-sdk';
+// import RouxSdk from 'react-native-roux-sdk';
+import { Roux, RouxView } from 'react-native-roux-sdk';
 
-export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-  console.log(RouxSdk);
-  React.useEffect(() => {
-    RouxSdk.multiply(4, 7).then(setResult);
-  }, []);
+export default class App extends React.Component{
+  setup = async () => {
+    try {
+      await Roux.initializeScanner()
+      await Roux.startPreview()
+      
+    }
+    catch(err) {
+      console.error(err)
+    }
+  }
 
-  return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
-  );
+  render() {
+    return (
+      <View style={styles.container}>
+        <RouxView
+          onVisualizerReady={this.setup} 
+        />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

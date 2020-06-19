@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 const { ScandyCoreManager } = NativeModules;
-
+const Roux = ScandyCoreManager
 const RCTScandyCoreView = requireNativeComponent('RCTScandyCoreView');
 
 type Props = {
@@ -57,7 +57,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-class RNScandyCoreView extends React.Component<Props> {
+class RouxView extends React.Component<Props> {
   static defaultProps = {
     onError: () => console.log('ScandyCore: Errored'),
     onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
@@ -244,7 +244,6 @@ class RNScandyCoreView extends React.Component<Props> {
         onLayout={(e) => {
           /**
            * NOTE: tell Scandy Core to render to prevent black screens.
-           * NOTE FROM GEORGE: does this work?
            */
           if (this.props.onLayout) {
             this.props.onLayout(e);
@@ -284,4 +283,4 @@ class RNScandyCoreView extends React.Component<Props> {
 
 // const { RouxSdk } = NativeModules;
 
-export default RNScandyCoreView;
+export { RouxView, Roux };
