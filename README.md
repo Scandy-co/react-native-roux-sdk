@@ -16,12 +16,44 @@ npm install react-native-roux-sdk
 
 ## Usage
 
+### Methods
+
 ```js
-import RouxSdk from 'react-native-roux-sdk';
+import { ScandyCoreManager } from 'react-native-roux-sdk';
 
 // ...
+// Set up the scan preview
+const result = await ScandyCoreManager.initializeScanner();
+const result = await ScandyCoreManager.startPreview();
 
-const result = await RouxSdk.multiply(3, 7);
+// ...
+// Update the scan parameters
+// const result = await ScandyCoreManager.setSize(???);
+// const result = await ScandyCoreManager.setResolution(???);
+
+// ...
+// Start, stop, and save your model
+const result = await ScandyCoreManager.startScan();
+const result = await ScandyCoreManager.stopScan(); // generates your mesh & shows mesh in preview window
+const result = await ScandyCoreManager.saveScan(destination);
+```
+
+### Component
+
+```js
+import { RNScandyCoreView } from 'react-native-roux-sdk';
+
+<RNScandyCoreView
+  style={{ flex: 1 }}
+  onVisualizerReady={() =>
+    console.log('wait for this to fire, then setup the scan preview')
+  }
+  onPreviewStart={this._onScannerStart}
+  onScannerStart={this._onScannerStart}
+  onScannerStop={this._onScannerStop}
+  onGenerateMesh={this._onGenerateMesh}
+  onSaveMesh={this._onSaveMesh}
+/>;
 ```
 
 ## Notes on building
