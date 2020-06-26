@@ -19,23 +19,23 @@ npm install react-native-roux-sdk
 ### Methods
 
 ```js
-import { ScandyCoreManager } from 'react-native-roux-sdk';
+import { Roux } from 'react-native-roux-sdk';
 
 // ...
 // Set up the scan preview
-const result = await ScandyCoreManager.initializeScanner();
-const result = await ScandyCoreManager.startPreview();
+const result = await Roux.initializeScanner();
+const result = await Roux.startPreview();
 
 // ...
 // Update the scan parameters
-// const result = await ScandyCoreManager.setSize(???);
-// const result = await ScandyCoreManager.setResolution(???);
+// const result = await Roux.setSize(???);
+// const result = await Roux.setResolution(???);
 
 // ...
 // Start, stop, and save your model
-const result = await ScandyCoreManager.startScan();
-const result = await ScandyCoreManager.stopScan(); // generates your mesh & shows mesh in preview window
-const result = await ScandyCoreManager.saveScan(destination);
+const result = await Roux.startScan();
+const result = await Roux.stopScan(); // generates your mesh & shows mesh in preview window
+const result = await Roux.saveScan(destination);
 ```
 
 ### Component
@@ -43,7 +43,7 @@ const result = await ScandyCoreManager.saveScan(destination);
 ```js
 import { RNScandyCoreView } from 'react-native-roux-sdk';
 
-<RNScandyCoreView
+<RouxViewer
   style={{ flex: 1 }}
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')

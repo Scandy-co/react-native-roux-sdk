@@ -19,7 +19,7 @@
 // import must come second
 
 #import "ScanView.h"
-#import "RCTScandyCoreViewManager.h"
+#import "RCTScandyCoreView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -31,7 +31,7 @@
 #import <ScandyCore/ScandyCoreManager.h>
 
 @interface
-RCTScandyCoreViewManager ()<ScandyCoreManagerDelegate>
+RCTScandyCoreView ()<ScandyCoreManagerDelegate>
 
 @property (nonatomic, strong) ScanView* scanView;
 @property (nonatomic, strong) NSString* licenseString;
@@ -40,7 +40,7 @@ RCTScandyCoreViewManager ()<ScandyCoreManagerDelegate>
 
 @end
 
-@implementation RCTScandyCoreViewManager
+@implementation RCTScandyCoreView
 
 @synthesize bridge = _bridge;
 

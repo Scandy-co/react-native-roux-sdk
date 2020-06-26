@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, Slider, Switch, Button } from 'react-native';
-import { ScandyCoreManager, RNScandyCoreView } from 'react-native-roux-sdk';
+import Roux, { RouxView } from 'react-native-roux-sdk';
 
 export default class App extends React.Component {
   async setupPreview() {
@@ -8,8 +8,8 @@ export default class App extends React.Component {
     //   onVisualizerReady fires twice immediately when mounting
     //   I haven't figured out why
     try {
-      await ScandyCoreManager.initializeScanner();
-      await ScandyCoreManager.startPreview();
+      await Roux.initializeScanner();
+      await Roux.startPreview();
     } catch (err) {
       console.warn(err);
     }
@@ -18,10 +18,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <RNScandyCoreView
-          style={styles.roux}
-          // onVisualizerReady={this.setupPreview}
-        />
+        <RouxView style={styles.roux} onVisualizerReady={this.setupPreview} />
         <View style={styles.actions}>
           <View style={styles.row}>
             <Slider style={styles.slider} />
@@ -33,10 +30,9 @@ export default class App extends React.Component {
             <Switch />
           </View>
           <View style={styles.row}>
-            <Button title="start scan" onPress={this.setupPreview} />
-            <Button title="stop scan" />
-            <Button title="save scan" />
-            <Button title="load scan" />
+            <Button title="start scan" onPress={Roux.startScan} />
+            <Button title="stop scan" onPress={Roux.stopScan} />
+            <Button title="save scan" onPress={Roux.saveScan} />
           </View>
         </View>
       </View>

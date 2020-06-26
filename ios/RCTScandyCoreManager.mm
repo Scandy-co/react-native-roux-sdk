@@ -15,6 +15,8 @@
 
 #include <scandy/core/IScandyCore.h>
 #include <scandy/core/Status.h>
+#include <scandy/core/ScannerType.h>
+#include <scandy/core/ScanState.h>
 
 #import "RCTScandyCoreManager.h"
 #import "ScanView.h"
@@ -278,9 +280,7 @@ RCT_EXPORT_METHOD(stopScan
     if (stopStatus == scandy::core::Status::SUCCESS) {
       return resolve(nil);
     } else {
-      auto reason = [[NSString alloc]
-        initWithFormat:@"%s",
-                       scandy::core::getStatusString(stopStatus).c_str()];
+      auto reason = [NSString stringWithUTF8String:getStatusStr(stopStatus)];
       return reject(reason, reason, nil);
     }
   });

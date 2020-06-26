@@ -12,12 +12,9 @@ import {
 } from 'react-native';
 
 const { ScandyCoreManager } = NativeModules;
+const Roux = ScandyCoreManager;
 
 const RCTScandyCoreView = requireNativeComponent('RCTScandyCoreView');
-interface Types {
-  startScan: () => any;
-  stopScan: () => any;
-}
 
 type Props = {
   /**
@@ -64,11 +61,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-// TODO figure Types for everything to set the exports for autocompletes
-// TODO like: export { RNScandyCoreView as ViewTypes, ScandyCoreManager as MethodTypes }
-// TODO where types are
-
-class RNScandyCoreView extends React.Component<Props> {
+class RouxView extends React.Component<Props> {
   static defaultProps = {
     onError: () => console.log('ScandyCore: Errored'),
     onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
@@ -94,80 +87,6 @@ class RNScandyCoreView extends React.Component<Props> {
     ScandyCoreManager.uninitializeScanner();
     // console.log('ScandyCoreView un mounting')
   }
-
-  /**
-   * Start roux scanning pipeline
-   */
-  startScan = () =>
-    ScandyCoreManager.startScan().catch((err: string) => this._onError(err));
-
-  /**
-   * Stop roux scanning pipeline and automatically generate mesh
-   */
-  stopScan = () =>
-    ScandyCoreManager.stopScan().catch((err: string) => this._onError(err));
-
-  /**
-   * Update scan resolution for bounded scanning
-   */
-  setSize = (val) =>
-    ScandyCoreManager.updateScanSize(val).catch((err: string) =>
-      this._onError(err)
-    );
-
-  /**
-   * Update scan resolution for unbounded scanning
-   */
-  setVoxelSize = (val) => {
-    ScandyCoreManager.updateVoxelSize(val)
-      .then(() => {
-        if (this.props.onVoxelSizeChanged) {
-          this.props.onVoxelSizeChanged();
-        }
-      })
-      .catch((err: string) => {
-        this._onError(err);
-      });
-  };
-
-  /**
-   * Update confidence threshold  for raw depth data
-   */
-  setNoiseFilter = (val) =>
-    ScandyCoreManager.updateNoiseFilter(val).catch((err: string) =>
-      this._onError(err)
-    );
-
-  /**
-   * Update confidence threshold  for raw depth data
-   */
-  setEnableColor = (enable: boolean) =>
-    ScandyCoreManager.setEnableColor(enable).catch((err: string) =>
-      this._onError(err)
-    );
-
-  loadMesh = (path: string) => {
-    // const { meshPath } = this.props;
-    ScandyCoreManager.loadMesh({ meshPath: path })
-      .then(() => {
-        if (this.props.onMeshLoaded) {
-          this.props.onMeshLoaded();
-        }
-      })
-      .catch((err: string) => {
-        this._onError(err);
-      });
-  };
-
-  saveMesh = (filePath = null) =>
-    ScandyCoreManager.saveMesh(filePath)
-      // .then(({ meshPath, previewImagePath }) => {
-      // We could do something with the new meshPath and previewImagePath if we wanted...
-      // })
-      .catch((err: string) => {
-        this._onError(err);
-      });
-
   _onError = (err: string) => {
     if (this.props.onError) {
       this.props.onError(err);
@@ -271,16 +190,9 @@ class RNScandyCoreView extends React.Component<Props> {
       <View
         style={style || StyleSheet.absoluteFill}
         onLayout={(e) => {
-          /**
-           * NOTE: tell Scandy Core to render to prevent black screens.
-           * NOTE FROM GEORGE: does this work?
-           */
           if (this.props.onLayout) {
             this.props.onLayout(e);
           }
-          requestAnimationFrame(() => {
-            // ScandyCoreView.render()
-          });
         }}
       >
         <RCTScandyCoreView
@@ -305,4 +217,22 @@ class RNScandyCoreView extends React.Component<Props> {
   }
 }
 
-export { RNScandyCoreView, ScandyCoreManager };
+// TODO example fo how to type up these methods for ScandyCoreManager
+// Promise<any> could probable be Promise<void> instead
+//  but I hit a speedbump...
+type RouxType = {
+  initializeScanner(): Promise<any>;
+  startPreview(): Promise<any>;
+  startScan(): Promise<any>;
+  stopScan(): Promise<any>;
+  saveScan(): Promise<any>;
+  getResolutions(): Promise<object>;
+  setResolution(dict: object): Promise<any>;
+  setSize(size: number): Promise<any>;
+  loadMesh(dict: object): Promise<any>;
+};
+
+// const { RouxSdk } = NativeModules;
+
+export default Roux as RouxType;
+export { RouxView };

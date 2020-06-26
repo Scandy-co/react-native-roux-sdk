@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTScandyCoreViewManager : RCTViewManager<RCTBridgeModule>
+@interface RCTScandyCoreView : RCTViewManager<RCTBridgeModule>
 
 @end
 

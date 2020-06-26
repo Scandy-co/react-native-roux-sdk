@@ -1,0 +1,1 @@
+## Put ScandyCoreLicense.txt in here
