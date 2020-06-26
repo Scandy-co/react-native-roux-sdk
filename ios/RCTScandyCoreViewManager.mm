@@ -35,6 +35,8 @@ RCTScandyCoreViewManager ()<ScandyCoreManagerDelegate>
 
 @property (nonatomic, strong) ScanView* scanView;
 @property (nonatomic, strong) NSString* licenseString;
+@property (nonatomic) bool isTracking;
+@property (nonatomic) float trackingCost;
 
 @end
 
@@ -53,6 +55,7 @@ RCT_EXPORT_VIEW_PROPERTY(onClientConnected, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onHostDiscovered, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVisualizerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVolumeMemoryDidUpdate, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onTrackingDidUpdate, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVidSavedToCamRoll, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(scanMode, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
@@ -126,20 +129,14 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-// - (void)setBridge:(RCTBridge*)bridge
-// {
-//   _bridge = bridge;
-//   [[NSNotificationCenter defaultCenter]
-//     addObserver:self
-//        selector:@selector(bridgeDidForeground:)
-//            name:@"BridgeDidForegroundNotification"
-//          object:self.bridge];
-//   [[NSNotificationCenter defaultCenter]
-//     addObserver:self
-//        selector:@selector(bridgeDidBackground:)
-//            name:@"BridgeDidBackgroundNotification"
-//          object:self.bridge];
-// }
+- (void)onTrackingDidUpdate:(float)confidence withTracking:(bool)is_tracking
+{
+  self.isTracking = is_tracking;
+  self.trackingCost = confidence;
+  if (is_tracking) {
+  } else {
+  }
+}
 
 - (UIView*)view
 {

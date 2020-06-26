@@ -16,7 +16,6 @@
 #include <scandy/core/IScandyCore.h>
 #include <scandy/core/Status.h>
 
-// imports must come second
 #import "RCTScandyCoreManager.h"
 #import "ScanView.h"
 
@@ -25,6 +24,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
+#import <React/RCTConvert.h>
+
 #import <ScandyCore/ScandyCore.h>
 #import <ScandyCore/ScandyCoreManager.h>
 
@@ -53,31 +54,20 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
 
     // Let's get the scanner fired up
     bool hasTrueDepth = [ScandyCoreManager hasTrueDepth];
-    auto slam_config =
-      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
     auto scannerType = scandy::core::ScannerType::TRUE_DEPTH;
-
-    // Make sure to reset all of these
-    slam_config->m_preview_mode = true;
-    slam_config->m_send_network_commands = false;
-    slam_config->m_receive_rendered_stream = false;
-    slam_config->m_send_rendered_stream = false;
-    slam_config->m_receive_network_commands = false;
-    slam_config->m_use_unbounded = false;
-
-    // Lets do this!!!!!
-    slam_config->m_use_texturing = true;
-
+      
+      auto slam_config = ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+      // Make sure to reset all of these
+      slam_config->m_send_network_commands = false;
+      slam_config->m_receive_rendered_stream = false;
+      slam_config->m_send_rendered_stream = false;
+      slam_config->m_receive_network_commands = false;
+      slam_config->m_use_texturing = false;
+      slam_config->m_save_input_plys = false;
+      slam_config->m_save_input_images = false;
+    
     auto status = [ScandyCoreManager initializeScanner:scannerType];
     ScandyCoreManager.scandyCorePtr->setBoundingBoxOffset(0.20);
-    ScandyCoreManager.scandyCorePtr->setScanSize(0.7);
-
-    slam_config->m_valid_depth_distance_ratio_thresh = 0.015f;
-    slam_config->m_valid_depth_neighbor_count_thresh = 3;
-    // Be generous
-    slam_config->m_valid_depth_distance_ratio_thresh = 0.015f;
-    slam_config->m_valid_depth_neighbor_count_thresh = 1;
-    slam_config->m_tsdf_mu_ratio = 0.025f;
   };
   if ([NSThread isMainThread]) {
     _initializeScanner();
@@ -354,6 +344,51 @@ RCT_EXPORT_METHOD(setSize
   }
 }
 
+RCT_EXPORT_METHOD(loadMesh
+                  : (NSDictionary*)details resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+
+  // get details from the js object
+  NSString* meshPath;
+  NSString* texturePath;
+
+  if (![[details objectForKey:@"meshPath"] isKindOfClass:NSString.class]) {
+    reject(@"", @"Expects a dict with meshPath property", nil);
+  }
+
+  meshPath = [RCTConvert NSString:details[@"meshPath"]];
+
+  // Check if the texture is valid
+  if ([[details objectForKey:@"texturePath"] isKindOfClass:NSString.class]) {
+    texturePath = [RCTConvert NSString:details[@"texturePath"]];
+  }
+
+  // Working with VTK, we need to be on the render thread
+  dispatch_async(dispatch_get_main_queue(), ^{
+    auto status = scandy::core::Status::NOT_FOUND;
+    if (ScandyCoreManager.scandyCorePtr) {
+      if (texturePath) {
+        status = ScandyCoreManager.scandyCorePtr->loadMesh(
+          std::string([meshPath UTF8String]),
+          std::string([texturePath UTF8String]));
+      } else {
+        status = ScandyCoreManager.scandyCorePtr->loadMesh(
+          std::string([meshPath UTF8String]));
+      }
+    }
+
+    if (status == scandy::core::Status::SUCCESS) {
+//      [self renderScanView];
+      resolve(nil);
+    } else {
+      reject(
+        [self formatStatusError:status], [self formatStatusError:status], nil);
+    }
+  });
+}
+
 RCT_EXPORT_METHOD(exportVolumetricVideo
                   : (NSDictionary*)props resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
@@ -428,5 +463,52 @@ RCT_EXPORT_METHOD(getCurrentScanState
     }
   });
 }
+
+- (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
+{
+  NSString* result = nil;
+
+  switch (scanState) {
+    case scandy::core::ScanState::INITIALIZED:
+      result = @"INITIALIZED";
+      break;
+    case scandy::core::ScanState::PREVIEWING:
+      result = @"PREVIEWING";
+      break;
+    case scandy::core::ScanState::SCANNING:
+      result = @"SCANNING";
+      break;
+    case scandy::core::ScanState::STOPPED:
+      result = @"STOPPED";
+      break;
+
+    case scandy::core::ScanState::MESHING:
+      result = @"MESHING";
+      break;
+    case scandy::core::ScanState::VIEWING:
+      result = @"VIEWING";
+      break;
+    case scandy::core::ScanState::NONE:
+      result = @"NONE";
+      break;
+    default:
+      result = @"Unexpected ScanState.";
+  }
+
+  return result;
+}
+
+- (NSString*)formatStatusError:(scandy::core::Status)status
+{
+  NSString* reason = [[NSString alloc]
+    initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
+#if !__has_feature(objc_arc)
+  [reason autorelease];
+#else
+  // Using ARC, no dealloc needed
+#endif
+  return reason;
+}
+
 
 @end

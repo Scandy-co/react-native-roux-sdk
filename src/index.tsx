@@ -1,3 +1,6 @@
+/**
+ * @format
+ */
 import * as React from 'react';
 import {
   StyleSheet,
@@ -11,6 +14,10 @@ import {
 const { ScandyCoreManager } = NativeModules;
 
 const RCTScandyCoreView = requireNativeComponent('RCTScandyCoreView');
+interface Types {
+  startScan: () => any;
+  stopScan: () => any;
+}
 
 type Props = {
   /**
@@ -57,6 +64,10 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
+// TODO figure Types for everything to set the exports for autocompletes
+// TODO like: export { RNScandyCoreView as ViewTypes, ScandyCoreManager as MethodTypes }
+// TODO where types are
+
 class RNScandyCoreView extends React.Component<Props> {
   static defaultProps = {
     onError: () => console.log('ScandyCore: Errored'),
@@ -84,17 +95,29 @@ class RNScandyCoreView extends React.Component<Props> {
     // console.log('ScandyCoreView un mounting')
   }
 
+  /**
+   * Start roux scanning pipeline
+   */
   startScan = () =>
     ScandyCoreManager.startScan().catch((err: string) => this._onError(err));
 
+  /**
+   * Stop roux scanning pipeline and automatically generate mesh
+   */
   stopScan = () =>
     ScandyCoreManager.stopScan().catch((err: string) => this._onError(err));
 
+  /**
+   * Update scan resolution for bounded scanning
+   */
   setSize = (val) =>
     ScandyCoreManager.updateScanSize(val).catch((err: string) =>
       this._onError(err)
     );
 
+  /**
+   * Update scan resolution for unbounded scanning
+   */
   setVoxelSize = (val) => {
     ScandyCoreManager.updateVoxelSize(val)
       .then(() => {
@@ -107,11 +130,17 @@ class RNScandyCoreView extends React.Component<Props> {
       });
   };
 
+  /**
+   * Update confidence threshold  for raw depth data
+   */
   setNoiseFilter = (val) =>
     ScandyCoreManager.updateNoiseFilter(val).catch((err: string) =>
       this._onError(err)
     );
 
+  /**
+   * Update confidence threshold  for raw depth data
+   */
   setEnableColor = (enable: boolean) =>
     ScandyCoreManager.setEnableColor(enable).catch((err: string) =>
       this._onError(err)
@@ -240,7 +269,7 @@ class RNScandyCoreView extends React.Component<Props> {
     const { style } = this.props;
     return (
       <View
-        style={StyleSheet.absoluteFill}
+        style={style || StyleSheet.absoluteFill}
         onLayout={(e) => {
           /**
            * NOTE: tell Scandy Core to render to prevent black screens.
@@ -276,12 +305,4 @@ class RNScandyCoreView extends React.Component<Props> {
   }
 }
 
-// import { NativeModules } from 'react-native';
-
-// type RouxSdkType = {
-//   multiply(a: number, b: number): Promise<number>;
-// };
-
-// const { RouxSdk } = NativeModules;
-
-export default RNScandyCoreView;
+export { RNScandyCoreView, ScandyCoreManager };
