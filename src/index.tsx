@@ -94,62 +94,62 @@ class RouxView extends React.Component<Props> {
     console.log(err);
   };
 
-  _onVisualizerReady = ({ nativeEvent }) => {
+  _onVisualizerReady = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onVisualizerReady) {
       this.props.onVisualizerReady(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onPreviewStart = ({ nativeEvent }) => {
+  _onPreviewStart = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onPreviewStart) {
       this.props.onPreviewStart(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onScannerStart = ({ nativeEvent }) => {
+  _onScannerStart = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onScannerStart) {
       this.props.onScannerStart(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onScannerStop = ({ nativeEvent }) => {
+  _onScannerStop = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onScannerStop) {
       this.props.onScannerStop(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onGenerateMesh = ({ nativeEvent }) => {
+  _onGenerateMesh = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onGenerateMesh) {
       this.props.onGenerateMesh(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onSaveMesh = ({ nativeEvent }) => {
+  _onSaveMesh = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onSaveMesh) {
       this.props.onSaveMesh(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onExportVolumetricVideo = ({ nativeEvent }) => {
+  _onExportVolumetricVideo = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onExportVolumetricVideo) {
       this.props.onExportVolumetricVideo(nativeEvent);
     }
     this._updateCoreState();
   };
 
-  _onClientConnected = ({ nativeEvent }) => {
+  _onClientConnected = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onClientConnected) {
       this.props.onClientConnected(nativeEvent.host);
     }
   };
 
-  _onHostDiscovered = ({ nativeEvent }) => {
+  _onHostDiscovered = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onHostDiscovered) {
       this.props.onHostDiscovered(nativeEvent.host);
     }
@@ -169,7 +169,7 @@ class RouxView extends React.Component<Props> {
     });
   };
 
-  _onVidSavedToCamRoll = ({ nativeEvent }) => {
+  _onVidSavedToCamRoll = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onVidSavedToCamRoll) {
       this.props.onVidSavedToCamRoll(nativeEvent);
     }
