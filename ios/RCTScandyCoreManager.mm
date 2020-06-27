@@ -352,7 +352,7 @@ RCT_EXPORT_METHOD(toggleV2Scanning
                   : (RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    bool enabled = _enabled == 0;
+    bool enabled = _enabled.boolValue;
     // Unitialized the scanner
     [ScandyCore uninitializeScanner];
     // Toggle the scanning mode
