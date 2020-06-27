@@ -14,20 +14,20 @@
 #include <scandy/utilities/eigen_vector_math.h>
 
 #include <scandy/core/IScandyCore.h>
-#include <scandy/core/Status.h>
-#include <scandy/core/ScannerType.h>
 #include <scandy/core/ScanState.h>
+#include <scandy/core/ScannerType.h>
+#include <scandy/core/Status.h>
 
+// imports last
 #import "RCTScandyCoreManager.h"
 #import "ScanView.h"
 
 #import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
-#import <React/RCTConvert.h>
-
 #import <ScandyCore/ScandyCore.h>
 #import <ScandyCore/ScandyCoreManager.h>
 
@@ -57,24 +57,25 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     // Let's get the scanner fired up
     bool hasTrueDepth = [ScandyCoreManager hasTrueDepth];
     auto scannerType = scandy::core::ScannerType::TRUE_DEPTH;
-      
-      auto slam_config = ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
-      // Make sure to reset all of these
-      slam_config->m_send_network_commands = false;
-      slam_config->m_receive_rendered_stream = false;
-      slam_config->m_send_rendered_stream = false;
-      slam_config->m_receive_network_commands = false;
-      slam_config->m_use_texturing = false;
-      slam_config->m_save_input_plys = false;
-      slam_config->m_save_input_images = false;
-    
+
+    auto slam_config =
+      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+    // Make sure to reset all of these
+    slam_config->m_send_network_commands = false;
+    slam_config->m_receive_rendered_stream = false;
+    slam_config->m_send_rendered_stream = false;
+    slam_config->m_receive_network_commands = false;
+    slam_config->m_use_texturing = false;
+    slam_config->m_save_input_plys = false;
+    slam_config->m_save_input_images = false;
+
     auto status = [ScandyCoreManager initializeScanner:scannerType];
     ScandyCoreManager.scandyCorePtr->setBoundingBoxOffset(0.20);
   };
   if ([NSThread isMainThread]) {
     _initializeScanner();
   } else {
-    dispatch_async(dispatch_get_main_queue(), _initializeScanner);
+    dispatch_sync(dispatch_get_main_queue(), _initializeScanner);
   }
 }
 
@@ -90,8 +91,7 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     if (slam_config->m_enable_volumetric_video_recording) {
       // Make the directory where this recording will live
       {
-        NSString* dirName =
-          [NSString stringWithFormat:@"tmp"];
+        NSString* dirName = [NSString stringWithFormat:@"tmp"];
 
         NSArray* paths = NSSearchPathForDirectoriesInDomains(
           NSDocumentDirectory, NSUserDomainMask, YES);
@@ -380,7 +380,7 @@ RCT_EXPORT_METHOD(loadMesh
     }
 
     if (status == scandy::core::Status::SUCCESS) {
-//      [self renderScanView];
+      //      [self renderScanView];
       resolve(nil);
     } else {
       reject(
@@ -398,53 +398,53 @@ RCT_EXPORT_METHOD(exportVolumetricVideo
   auto slam_config =
     ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
   // Do this on a seperate thread so we can still render during it
-  dispatch_async(
-    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-      std::string dirPath;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    std::string dirPath;
 
-      scandy::core::MeshExportOptions opts;
-      opts.m_mesh_type = scandy::core::MeshType::DRACO;
-      opts.m_decimate = 0.1;
-      opts.m_smoothing = 5;
-      opts.m_texture_quality = 0.35;
-      opts.m_remove_raw_file = false;
-      //      opts.m_dst_dir_path =
-      //      opts.m_src_dir_path =
+    scandy::core::MeshExportOptions opts;
+    opts.m_mesh_type = scandy::core::MeshType::DRACO;
+    opts.m_decimate = 0.1;
+    opts.m_smoothing = 5;
+    opts.m_texture_quality = 0.35;
+    opts.m_remove_raw_file = false;
+    //      opts.m_dst_dir_path =
+    //      opts.m_src_dir_path =
 
-      if (props[@"src_dir"]) {
-        opts.m_src_dir_path = [[props[@"src_dir"] stringValue] UTF8String];
-      }
-      if (props[@"dst_dir"]) {
-        dirPath = opts.m_dst_dir_path = [[props[@"dst_dir"] stringValue] UTF8String];
-      } else {
-        dirPath = slam_config->m_scan_dir_path;
-      }
+    if (props[@"src_dir"]) {
+      opts.m_src_dir_path = [[props[@"src_dir"] stringValue] UTF8String];
+    }
+    if (props[@"dst_dir"]) {
+      dirPath = opts.m_dst_dir_path =
+        [[props[@"dst_dir"] stringValue] UTF8String];
+    } else {
+      dirPath = slam_config->m_scan_dir_path;
+    }
 
-      if (props[@"decimate"]) {
-        opts.m_decimate = [props[@"decimate"] floatValue];
-      } 
-      if (props[@"texture_quality"]) {
-        opts.m_texture_quality = [props[@"texture_quality"] floatValue];
-      }
-      if (props[@"smoothing"]) {
-        opts.m_smoothing = [props[@"smoothing"] intValue];
-      }
+    if (props[@"decimate"]) {
+      opts.m_decimate = [props[@"decimate"] floatValue];
+    }
+    if (props[@"texture_quality"]) {
+      opts.m_texture_quality = [props[@"texture_quality"] floatValue];
+    }
+    if (props[@"smoothing"]) {
+      opts.m_smoothing = [props[@"smoothing"] intValue];
+    }
 
-      scandy::core::Status status =
-        ScandyCoreManager.scandyCorePtr->exportVolumetricVideo(opts);
-      if (status == scandy::core::Status::SUCCESS) {
-        resolve(@{
-          @"directory" : [NSString stringWithUTF8String:dirPath.c_str()],
-          @"success" :
-            [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-          @"status" : [ScandyCoreManager formatStatusError:status]
-        });
-      } else {
-        auto reason = [[NSString alloc]
-          initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
-        return reject(reason, reason, nil);
-      }
-    });
+    scandy::core::Status status =
+      ScandyCoreManager.scandyCorePtr->exportVolumetricVideo(opts);
+    if (status == scandy::core::Status::SUCCESS) {
+      resolve(@{
+        @"directory" : [NSString stringWithUTF8String:dirPath.c_str()],
+        @"success" :
+          [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+        @"status" : [ScandyCoreManager formatStatusError:status]
+      });
+    } else {
+      auto reason = [[NSString alloc]
+        initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
+      return reject(reason, reason, nil);
+    }
+  });
 }
 
 RCT_EXPORT_METHOD(getCurrentScanState
@@ -509,6 +509,5 @@ RCT_EXPORT_METHOD(getCurrentScanState
 #endif
   return reason;
 }
-
 
 @end
