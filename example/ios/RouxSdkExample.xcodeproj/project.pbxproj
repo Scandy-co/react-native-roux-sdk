@@ -17,6 +17,7 @@
 		41992DC4248ADBBC001820FF /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		41C9063724A65F4500CDF943 /* ScandyCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 41C9063624A65F4500CDF943 /* ScandyCore.framework */; };
 		41C9063824A65F4500CDF943 /* ScandyCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 41C9063624A65F4500CDF943 /* ScandyCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A5481EF324A7AA080000E793 /* ScandyCoreLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5EBE6E30249C008900204696 /* ScandyCoreLicense.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,7 +44,6 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RouxSdkExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RouxSdkExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RouxSdkExample/main.m; sourceTree = "<group>"; };
-		20F357AD24636CDE00C146DC /* RouxSdkExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RouxSdkExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		20F357AE24636CDF00C146DC /* RouxSdkExample-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RouxSdkExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		20F357AF24636CDF00C146DC /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		41C9063624A65F4500CDF943 /* ScandyCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScandyCore.framework; path = Frameworks/ScandyCore.framework; sourceTree = "<group>"; };
@@ -119,7 +119,6 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				1CFFDEF7170271C97B8B7E5A /* Pods */,
-				20F357AD24636CDE00C146DC /* RouxSdkExample-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -199,6 +198,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				A5481EF324A7AA080000E793 /* ScandyCoreLicense.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
