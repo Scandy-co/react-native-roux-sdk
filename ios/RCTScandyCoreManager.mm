@@ -300,6 +300,21 @@ RCT_EXPORT_METHOD(stopScan
   });
 }
 
+RCT_EXPORT_METHOD(generateMesh
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    auto status = [ScandyCore generateMesh];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(nil);
+    } else {
+      auto reason = [NSString stringWithUTF8String:getStatusStr(status)];
+      return reject(reason, reason, nil);
+    }
+  });
+}
+
 RCT_EXPORT_METHOD(getResolutions
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
