@@ -65,6 +65,16 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   return RCTGetUIManagerQueue();
 }
 
+- (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
+{
+  return [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+}
+
+- (NSString*)formatStatusError:(scandy::core::Status)status
+{
+  return [NSString stringWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
+}
+
 - (void)onVisualizerReady:(bool)createdVisualizer
 {
   // NSLog(@"onVisualizerReady, created %@", createdVisualizer ? @"YES" : @"NO");
@@ -94,7 +104,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
     self.scanView.onPreviewStart(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-      @"status" : [ScandyCoreManager formatStatusError:status]
+      @"status" : [self formatStatusError:status]
     });
   }
 }
@@ -104,7 +114,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
     self.scanView.onScannerStart(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-      @"status" : [ScandyCoreManager formatStatusError:status]
+      @"status" : [self formatStatusError:status]
     });
   }
 }
@@ -116,7 +126,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
     self.scanView.onScannerStop(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-      @"status" : [ScandyCoreManager formatStatusError:status]
+      @"status" : [self formatStatusError:status]
     });
   }
 }

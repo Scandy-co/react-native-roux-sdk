@@ -44,6 +44,7 @@ RCTScandyCoreManager ()
 
 RCT_EXPORT_MODULE(ScandyCoreManager);
 
+
 + (void)setLicense
 {
   [ScandyCore setLicense];
@@ -244,7 +245,7 @@ RCT_EXPORT_METHOD(startPreview
     } else {
       NSString* msg = [NSString
         stringWithFormat:@"Could not start preview. ScandyCore state: %@",
-                         [ScandyCoreManager formatScanStateToString:state]];
+                         [self formatScanStateToString:state]];
       reject(@"-1", msg, nil);
     }
   });
@@ -502,7 +503,7 @@ RCT_EXPORT_METHOD(exportVolumetricVideo
         @"directory" : [NSString stringWithUTF8String:dirPath.c_str()],
         @"success" :
           [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-        @"status" : [ScandyCoreManager formatStatusError:status]
+        @"status" : [self formatStatusError:status]
       });
     } else {
       auto reason = [[NSString alloc]
@@ -519,7 +520,7 @@ RCT_EXPORT_METHOD(getCurrentScanState
 
   dispatch_async(dispatch_get_main_queue(), ^{
     if (ScandyCoreManager.scandyCorePtr) {
-      NSString* state = [ScandyCoreManager
+      NSString* state = [self
         formatScanStateToString:ScandyCoreManager.scandyCorePtr
                                   ->getScanState()];
       resolve(state);
@@ -531,48 +532,12 @@ RCT_EXPORT_METHOD(getCurrentScanState
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
-  NSString* result = nil;
-
-  switch (scanState) {
-    case scandy::core::ScanState::INITIALIZED:
-      result = @"INITIALIZED";
-      break;
-    case scandy::core::ScanState::PREVIEWING:
-      result = @"PREVIEWING";
-      break;
-    case scandy::core::ScanState::SCANNING:
-      result = @"SCANNING";
-      break;
-    case scandy::core::ScanState::STOPPED:
-      result = @"STOPPED";
-      break;
-
-    case scandy::core::ScanState::MESHING:
-      result = @"MESHING";
-      break;
-    case scandy::core::ScanState::VIEWING:
-      result = @"VIEWING";
-      break;
-    case scandy::core::ScanState::NONE:
-      result = @"NONE";
-      break;
-    default:
-      result = @"Unexpected ScanState.";
-  }
-
-  return result;
+  return [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
 }
 
 - (NSString*)formatStatusError:(scandy::core::Status)status
 {
-  NSString* reason = [[NSString alloc]
-    initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
-#if !__has_feature(objc_arc)
-  [reason autorelease];
-#else
-  // Using ARC, no dealloc needed
-#endif
-  return reason;
+  return [NSString stringWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
 }
 
 @end
