@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, View, Slider, Switch, Button } from 'react-native';
+import { StyleSheet, View, Slider, Switch, Button, Alert } from 'react-native';
 import Roux, { RouxView } from 'react-native-roux-sdk';
+import RNFS from 'react-native-fs';
 
 export default class App extends React.Component {
   async setupPreview() {
@@ -23,6 +24,23 @@ export default class App extends React.Component {
     }
   }
 
+  async onGenerateMesh() {
+    // call back that generate mesh finished
+  }
+
+  async saveScan() {
+    try {
+      const dirPath = `${RNFS.DocumentDirectoryPath}/${Date.now()}`;
+      await RNFS.mkdir(dirPath);
+      console.log('made dir', dirPath);
+      const filePath = `${dirPath}/scan.ply`;
+      await Roux.saveScan(filePath);
+      Alert.alert('Saved scan', `Saved to: ${filePath}`);
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -30,6 +48,7 @@ export default class App extends React.Component {
           style={styles.roux}
           onVisualizerReady={this.setupPreview}
           onScannerStop={this.onScannerStop}
+          onGenerateMesh={this.onGenerateMesh}
         />
         <View style={styles.actions}>
           <View style={styles.row}>
@@ -57,7 +76,7 @@ export default class App extends React.Component {
             <Button
               title="save scan"
               onPress={() => {
-                Roux.saveScan();
+                this.saveScan();
               }}
             />
           </View>
