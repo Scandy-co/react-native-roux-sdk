@@ -13,23 +13,22 @@ import RNFS from 'react-native-fs';
 
 export default class App extends React.Component {
   state = {
-    v2Scanning: true, // v2 scanning on by default
+    v2ScanningMode: true, // v2 scanning on by default
+    scanSize: 1.0, // scan size in mm or meters pending on scanning mode
   };
   constructor(props: Readonly<{}>) {
     super(props);
   }
 
-  async setupPreview() {
-    //  TODO this basic init doesnt work because
-    //   onVisualizerReady fires twice immediately when mounting
-    //   I haven't figured out why
+  setupPreview = async () => {
     try {
+      await Roux.toggleV2Scanning(this.state.v2ScanningMode);
       await Roux.initializeScanner();
       await Roux.startPreview();
     } catch (err) {
       console.warn(err);
     }
-  }
+  };
 
   async onScannerStop() {
     try {
@@ -58,15 +57,25 @@ export default class App extends React.Component {
 
   toggleV2Scanning = async () => {
     try {
-      const v2Scanning = !this.state.v2Scanning;
-      await Roux.toggleV2Scanning(v2Scanning);
-      this.setState({ v2Scanning });
+      const v2ScanningMode = !this.state.v2ScanningMode;
+      await Roux.toggleV2Scanning(v2ScanningMode);
+      this.setState({ v2ScanningMode });
+      this.setSize(this.state.scanSize);
     } catch (err) {
       console.warn(err);
     }
   };
 
-  async setScanSize(e) {}
+  setSize = async (val: number) => {
+    try {
+      const size = this.state.v2ScanningMode ? val * 1e-3 : val;
+      await Roux.setSize(size);
+      // Round the number to the tenth precision
+      this.setState({ scanSize: Math.floor(val * 10) / 10 });
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
   render() {
     return (
@@ -79,13 +88,26 @@ export default class App extends React.Component {
         />
         <View style={styles.actions}>
           <View style={styles.row}>
-            <Slider style={styles.slider} onValueChange={this.setScanSize} />
+            <View style={styles.column}>
+              {this.state.v2ScanningMode ? (
+                <Text>size: {this.state.scanSize}mm</Text>
+              ) : (
+                <Text>size: {this.state.scanSize}m</Text>
+              )}
+
+              <Slider
+                minimumValue={0.2}
+                maximumValue={4}
+                style={styles.slider}
+                onValueChange={this.setSize}
+              />
+            </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column}>
               <Switch
                 onValueChange={this.toggleV2Scanning}
-                value={this.state.v2Scanning}
+                value={this.state.v2ScanningMode}
               />
               <Text>v2 scanning</Text>
             </View>
