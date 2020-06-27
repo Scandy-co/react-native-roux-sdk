@@ -31,7 +31,7 @@
 #import <ScandyCore/ScandyCoreManager.h>
 
 @interface
-RCTScandyCoreView ()<ScandyCoreManagerDelegate>
+RCTScandyCoreView ()<ScandyCoreDelegate>
 
 @property (nonatomic, strong) ScanView* scanView;
 @property (nonatomic, strong) NSString* licenseString;
@@ -140,7 +140,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 
 - (UIView*)view
 {
-  [ScandyCoreManager setScandyCoreDelegate:self];
+  [ScandyCore setDelegate:self];
   if( self.scanView ) {
     [self.scanView removeFromSuperview];
     self.scanView = nil;
