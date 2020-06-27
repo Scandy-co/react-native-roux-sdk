@@ -11,7 +11,8 @@
   "dependencies": {
     "react": "16.11.0",
     "react-native": "0.62.0",
-    "react-native-fs": "^2.16.6"
+    "react-native-fs": "^2.16.6",
+    "react-native-roux-sdk": "https://github.com/Scandy-co/react-native-roux-sdk"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

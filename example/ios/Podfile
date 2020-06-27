@@ -55,7 +55,7 @@ target 'RouxSdkExample' do
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
-  pod 'react-native-roux-sdk', :path => '../..'
+  pod 'react-native-roux-sdk', :path => '../node_modules/react-native-roux-sdk'
 
   use_native_modules!
   

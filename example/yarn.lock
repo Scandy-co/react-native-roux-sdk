@@ -3480,6 +3480,10 @@ react-native-fs@^2.16.6:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
+"react-native-roux-sdk@https://github.com/Scandy-co/react-native-roux-sdk":
+  version "0.1.0"
+  resolved "https://github.com/Scandy-co/react-native-roux-sdk#5115fa301889a12e8cfd7334d5e798e2a45cce73"
+
 react-native@0.62.0:
   version "0.62.0"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.62.0.tgz#166dcab76f0b5ae36a4d7046de2cbfecfdc610f1"

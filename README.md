@@ -2,6 +2,12 @@
 
 A React Native wrapper around the Roux 3D scanning SDK for iOS. Provides access to 3D meshing, measuring, editing tools, etc. https://scandy.co/apps/roux
 
+## Compatibility
+
+This react-native-roux-sdk is built to be used with `Roux.framework` **v0.7.2**.
+
+We are still working on version linking this react native package and the Roux SDK framework.
+
 ## Installation
 
 ```sh
