@@ -353,13 +353,30 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     bool enabled = _enabled.boolValue;
-    // Unitialized the scanner
-    [ScandyCore uninitializeScanner];
+    
+    // get the current scan state so we can reset it after toggling
+    auto scanState = ScandyCoreManager.scandyCorePtr->getScanState();
+    const bool wasInited = scanState == scandy::core::ScanState::INITIALIZED;
+    const bool wasPreviewing = scanState == scandy::core::ScanState::PREVIEWING ||
+                         scanState == scandy::core::ScanState::SCANNING;
+    
+    // Unitialized the scanner if we need to
+    if (wasInited) {
+      [ScandyCore uninitializeScanner];
+    }
+    
     // Toggle the scanning mode
     auto status = [ScandyCore toggleV2Scanning:enabled];
-    // Initialize and restart the preview
-    [ScandyCore initializeScanner];
-    [ScandyCore startPreview];
+
+    // Initialize if it was before toggling
+    if (wasInited) {
+      [ScandyCore initializeScanner];
+    }
+
+    // Start the preview if it was before toggling
+    if (wasPreviewing) {
+      [ScandyCore startPreview];
+    }
 
     if (status == scandy::core::Status::SUCCESS) {
       return resolve(nil);
