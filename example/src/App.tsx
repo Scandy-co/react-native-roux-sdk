@@ -15,10 +15,22 @@ export default class App extends React.Component {
     }
   }
 
+  async onScannerStop() {
+    try {
+      await Roux.generateMesh();
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <RouxView style={styles.roux} onVisualizerReady={this.setupPreview} />
+        <RouxView
+          style={styles.roux}
+          onVisualizerReady={this.setupPreview}
+          onScannerStop={this.onScannerStop}
+        />
         <View style={styles.actions}>
           <View style={styles.row}>
             <Slider style={styles.slider} />
