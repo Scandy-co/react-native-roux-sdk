@@ -30,9 +30,24 @@ export default class App extends React.Component {
             <Switch />
           </View>
           <View style={styles.row}>
-            <Button title="start scan" onPress={Roux.startScan} />
-            <Button title="stop scan" onPress={Roux.stopScan} />
-            <Button title="save scan" onPress={Roux.saveScan} />
+            <Button
+              title="start scan"
+              onPress={() => {
+                Roux.startScan();
+              }}
+            />
+            <Button
+              title="stop scan"
+              onPress={() => {
+                Roux.stopScan();
+              }}
+            />
+            <Button
+              title="save scan"
+              onPress={() => {
+                Roux.saveScan();
+              }}
+            />
           </View>
         </View>
       </View>
