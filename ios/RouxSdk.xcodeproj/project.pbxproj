@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		41992DBC24899567001820FF /* RCTScandyCoreViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41992DB824899567001820FF /* RCTScandyCoreViewManager.mm */; };
 		41992DBD24899567001820FF /* RCTScandyCoreManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41992DB924899567001820FF /* RCTScandyCoreManager.mm */; };
 		41992DC024899975001820FF /* ScanView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41992DBF24899975001820FF /* ScanView.mm */; };
 		5E555C0D2413F4C50049A1A2 /* RouxSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RouxSdk.m */; };
@@ -27,9 +26,7 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRouxSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRouxSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		41992DB824899567001820FF /* RCTScandyCoreViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTScandyCoreViewManager.mm; sourceTree = "<group>"; };
 		41992DB924899567001820FF /* RCTScandyCoreManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTScandyCoreManager.mm; sourceTree = "<group>"; };
-		41992DBA24899567001820FF /* RCTScandyCoreViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScandyCoreViewManager.h; sourceTree = "<group>"; };
 		41992DBB24899567001820FF /* RCTScandyCoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScandyCoreManager.h; sourceTree = "<group>"; };
 		41992DBE24899975001820FF /* ScanView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanView.h; sourceTree = "<group>"; };
 		41992DBF24899975001820FF /* ScanView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ScanView.mm; sourceTree = "<group>"; };
@@ -63,8 +60,6 @@
 				41992DBF24899975001820FF /* ScanView.mm */,
 				41992DBB24899567001820FF /* RCTScandyCoreManager.h */,
 				41992DB924899567001820FF /* RCTScandyCoreManager.mm */,
-				41992DBA24899567001820FF /* RCTScandyCoreViewManager.h */,
-				41992DB824899567001820FF /* RCTScandyCoreViewManager.mm */,
 				B3E7B5881CC2AC0600A0062D /* RouxSdk.h */,
 				B3E7B5891CC2AC0600A0062D /* RouxSdk.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -128,7 +123,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41992DBC24899567001820FF /* RCTScandyCoreViewManager.mm in Sources */,
 				5E555C0D2413F4C50049A1A2 /* RouxSdk.m in Sources */,
 				41992DBD24899567001820FF /* RCTScandyCoreManager.mm in Sources */,
 				41992DC024899975001820FF /* ScanView.mm in Sources */,
