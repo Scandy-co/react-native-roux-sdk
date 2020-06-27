@@ -82,9 +82,6 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
 - (void)startPreview
 {
   auto _startPreview = ^{
-    // Make sure no on has taken our delegate...
-
-    [ScandyCoreManager setScandyCoreDelegate:self];
     auto slam_config =
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
     // Make sure we get a fresh dir
@@ -276,7 +273,7 @@ RCT_EXPORT_METHOD(stopScan
   dispatch_async(dispatch_get_main_queue(), ^{
     // And now the screen can go to sleep
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    auto stopStatus = [ScandyCoreManager stopScanning];
+    auto stopStatus = [ScandyCore stopScanning];
     if (stopStatus == scandy::core::Status::SUCCESS) {
       return resolve(nil);
     } else {
