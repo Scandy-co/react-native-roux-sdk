@@ -331,38 +331,35 @@ RCT_EXPORT_METHOD(saveScan
   });
 }
 
-RCT_EXPORT_METHOD(getResolutions
+RCT_EXPORT_METHOD(getV2ScanningEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     scandy::core::ScanResolution max_resolution;
-    auto scan_resolutions =
-      ScandyCoreManager.scandyCorePtr->getAvailableScanResolutions();
-    id resolutions = [NSMutableArray new];
-    for (auto scan_resolution : scan_resolutions) {
-
-      [resolutions addObject:@{
-        @"description" :
-          [NSString stringWithUTF8String:scan_resolution.description.c_str()],
-        @"id" : [NSNumber numberWithInteger:scan_resolution.id],
-        @"resolution" :
-          [NSNumber numberWithInteger:scan_resolution.resolution.x],
-      }];
-    }
-    resolve(@{ @"resolutions" : resolutions });
+    bool unbounded =
+      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()
+        ->m_use_unbounded;
+    NSNumber* v2 = [NSNumber numberWithBool:unbounded];
+    NSNumber* v1 = [NSNumber numberWithBool:!unbounded];
+    resolve(@{ @"v2" : v2, @"v1" : v1 });
   });
 }
 
-RCT_EXPORT_METHOD(setResolution
-                  : (NSDictionary*)dict resolver
+RCT_EXPORT_METHOD(toggleV2Scanning
+                  : (NSNumber* _Nonnull)_enabled resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    scandy::core::ScanResolution res;
-    res.id = [dict[@"id"] intValue];
-    auto status = ScandyCoreManager.scandyCorePtr->setResolution(res);
+    bool enabled = _enabled == 0;
+    // Unitialized the scanner
+    [ScandyCore uninitializeScanner];
+    // Toggle the scanning mode
+    auto status = [ScandyCore toggleV2Scanning:enabled];
+    // Initialize and restart the preview
+    [ScandyCore initializeScanner];
+    [ScandyCore startPreview];
 
     if (status == scandy::core::Status::SUCCESS) {
       return resolve(nil);
@@ -379,7 +376,13 @@ RCT_EXPORT_METHOD(setSize
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
-  auto status = ScandyCoreManager.scandyCorePtr->setScanSize(size);
+  scandy::core::Status status;
+  if (ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()
+        ->m_use_unbounded) {
+    status = ScandyCoreManager.scandyCorePtr->setVoxelSize(size);
+  } else {
+    status = ScandyCoreManager.scandyCorePtr->setScanSize(size);
+  }
   if (status == scandy::core::Status::SUCCESS) {
     resolve(nil);
   } else {

@@ -227,10 +227,9 @@ type RouxType = {
   stopScan(): Promise<any>;
   generateMesh(): Promise<any>;
   saveScan(filePath: string): Promise<any>;
-  getResolutions(): Promise<object>;
-  setResolution(dict: object): Promise<any>;
   setSize(size: number): Promise<any>;
   loadMesh(dict: object): Promise<any>;
+  toggleV2Scanning(enabled: boolean): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;
