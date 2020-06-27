@@ -28,8 +28,14 @@ const result = await Roux.startPreview();
 
 // ...
 // Update the scan parameters
-// const result = await Roux.setSize(???);
-// const result = await Roux.setResolution(???);
+
+// For V1 (aka bounded scanning)
+const boxSize = 1.5; // meters
+const result = await Roux.setSize(boxSize);
+
+// For V2 (aka unbounded scanning)
+const voxelSize = 1.5; // millimeters
+const result = await Roux.setSize(voxelSize * 1e-3); // set size needs meters, so convert mm to m
 
 // ...
 // Start, stop, and save your model
