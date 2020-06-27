@@ -266,6 +266,23 @@ RCT_EXPORT_METHOD(startRecording
   slam_config->m_preview_mode = false;
 }
 
+RCT_EXPORT_METHOD(startScan
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // And now the screen can go to sleep
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    auto startStatus = [ScandyCore startScanning];
+    if (startStatus == scandy::core::Status::SUCCESS) {
+      return resolve(nil);
+    } else {
+      auto reason = [NSString stringWithUTF8String:getStatusStr(startStatus)];
+      return reject(reason, reason, nil);
+    }
+  });
+}
+
 RCT_EXPORT_METHOD(stopScan
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
