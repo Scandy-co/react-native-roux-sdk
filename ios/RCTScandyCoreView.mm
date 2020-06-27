@@ -67,7 +67,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 
 - (void)onVisualizerReady:(bool)createdVisualizer
 {
-  NSLog(@"onVisualizerReady, created %@", createdVisualizer ? @"YES" : @"NO");
+  // NSLog(@"onVisualizerReady, created %@", createdVisualizer ? @"YES" : @"NO");
   // NOTE: we can't use this because it gets called back before we finish
   // setting self.scanView = [ScanView init] and therefor we have no
   // self.scanView
