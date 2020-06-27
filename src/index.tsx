@@ -226,7 +226,7 @@ type RouxType = {
   startScan(): Promise<any>;
   stopScan(): Promise<any>;
   generateMesh(): Promise<any>;
-  saveScan(): Promise<any>;
+  saveScan(filePath: string): Promise<any>;
   getResolutions(): Promise<object>;
   setResolution(dict: object): Promise<any>;
   setSize(size: number): Promise<any>;
