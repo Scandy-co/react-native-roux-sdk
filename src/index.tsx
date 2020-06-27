@@ -95,7 +95,6 @@ class RouxView extends React.Component<Props> {
   };
 
   _onVisualizerReady = ({ nativeEvent }) => {
-    console.log('on vis ready');
     if (this.props.onVisualizerReady) {
       this.props.onVisualizerReady(nativeEvent);
     }
