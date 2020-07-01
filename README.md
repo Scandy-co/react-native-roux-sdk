@@ -10,10 +10,8 @@ We are still working on version linking this react native package and the Roux S
 
 ## Installation
 
-In package.json, add react-native-roux-sdk to your dependencies
-
 ```
-"react-native-roux-sdk": "https://github.com/Scandy-co/react-native-roux-sdk"
+npm install https://github.com/Scandy-co/react-native-roux-sdk
 ```
 
 ## Usage
