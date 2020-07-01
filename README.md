@@ -53,9 +53,9 @@ const result = await Roux.saveScan(destination);
 ### Component
 
 ```js
-import { RNScandyCoreView } from 'react-native-roux-sdk';
+import { RouxView } from 'react-native-roux-sdk';
 
-<RouxViewer
+<RouxView
   style={{ flex: 1 }}
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
