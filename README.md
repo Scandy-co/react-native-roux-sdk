@@ -72,7 +72,8 @@ import { RouxView } from 'react-native-roux-sdk';
 
 In Build Settings for your project including this library, please change Build Settings to:
 
-Bitcode Enabled: false
+Enable Bitcode: No
+
 Valid Architectures: arm64
 
 ## Contributing
