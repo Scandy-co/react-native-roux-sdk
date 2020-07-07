@@ -4,20 +4,14 @@ A React Native wrapper around the Roux 3D scanning SDK for iOS. Provides access 
 
 ## Compatibility
 
-This react-native-roux-sdk is built to be used with `Roux.framework` **v0.7.2**.
+This react-native-roux-sdk is built to be used with `ScandyCore.framework` **v0.7.2**.
 
 We are still working on version linking this react native package and the Roux SDK framework.
 
 ## Installation
 
-```sh
-yarn add react-native-roux-sdk
 ```
-
-Or
-
-```sh
-npm install react-native-roux-sdk
+npm install https://github.com/Scandy-co/react-native-roux-sdk
 ```
 
 ## Usage
@@ -53,9 +47,9 @@ const result = await Roux.saveScan(destination);
 ### Component
 
 ```js
-import { RNScandyCoreView } from 'react-native-roux-sdk';
+import { RouxView } from 'react-native-roux-sdk';
 
-<RouxViewer
+<RouxView
   style={{ flex: 1 }}
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
@@ -72,7 +66,8 @@ import { RNScandyCoreView } from 'react-native-roux-sdk';
 
 In Build Settings for your project including this library, please change Build Settings to:
 
-Bitcode Enabled: false
+Enable Bitcode: No
+
 Valid Architectures: arm64
 
 In `General`, add `ScandyCore.framework` to `Frameworks, Libraries and Embedded Content`.
