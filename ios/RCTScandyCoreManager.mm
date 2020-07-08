@@ -362,7 +362,7 @@ RCT_EXPORT_METHOD(toggleV2Scanning
                          scanState == scandy::core::ScanState::SCANNING;
     
     // Unitialized the scanner if we need to
-    if (wasInited) {
+    if (wasInited || wasPreviewing) {
       [ScandyCore uninitializeScanner];
     }
     
@@ -376,6 +376,7 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 
     // Start the preview if it was before toggling
     if (wasPreviewing) {
+      [ScandyCore initializeScanner];
       [ScandyCore startPreview];
     }
 
