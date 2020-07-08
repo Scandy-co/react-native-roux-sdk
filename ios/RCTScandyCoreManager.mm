@@ -357,12 +357,12 @@ RCT_EXPORT_METHOD(toggleV2Scanning
     
     // get the current scan state so we can reset it after toggling
     auto scanState = ScandyCoreManager.scandyCorePtr->getScanState();
-    const bool wasInited = scanState == scandy::core::ScanState::INITIALIZED;
     const bool wasPreviewing = scanState == scandy::core::ScanState::PREVIEWING ||
                          scanState == scandy::core::ScanState::SCANNING;
+    const bool wasInited = wasPreviewing || scanState == scandy::core::ScanState::INITIALIZED;
     
     // Unitialized the scanner if we need to
-    if (wasInited || wasPreviewing) {
+    if (wasInited) {
       [ScandyCore uninitializeScanner];
     }
     
@@ -376,7 +376,6 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 
     // Start the preview if it was before toggling
     if (wasPreviewing) {
-      [ScandyCore initializeScanner];
       [ScandyCore startPreview];
     }
 
