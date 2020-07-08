@@ -70,6 +70,8 @@ Enable Bitcode: No
 
 Valid Architectures: arm64
 
+In `General`, add `ScandyCore.framework` to `Frameworks, Libraries and Embedded Content`.
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.

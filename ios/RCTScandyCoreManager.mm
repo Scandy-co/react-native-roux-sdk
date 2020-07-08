@@ -119,13 +119,18 @@ RCT_EXPORT_METHOD(initializeScanner
   dispatch_async(dispatch_get_main_queue(), ^{
     auto slam_config =
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
-    [self initializeScanner];
-    bool inited = scandy::core::ScanState::INITIALIZED ==
-                  ScandyCoreManager.scandyCorePtr->getScanState();
-    if (inited) {
-      return resolve(nil);
+    auto licenseStatus = [ScandyCore setLicense];
+    if (licenseStatus == scandy::core::Status::SUCCESS){
+      [self initializeScanner];
+      bool inited = scandy::core::ScanState::INITIALIZED ==
+                    ScandyCoreManager.scandyCorePtr->getScanState();
+      if (inited) {
+        return resolve(nil);
+      } else {
+        return reject(@"-1", @"Could not initialize scanner", nil);
+      }
     } else {
-      return reject(@"-1", @"Could not initialize scanner", nil);
+      return reject(@"-1", @"Invalid license", nil);
     }
   });
 }
