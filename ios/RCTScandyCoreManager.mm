@@ -347,8 +347,7 @@ RCT_EXPORT_METHOD(getV2ScanningEnabled
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()
         ->m_use_unbounded;
     NSNumber* v2 = [NSNumber numberWithBool:unbounded];
-    NSNumber* v1 = [NSNumber numberWithBool:!unbounded];
-    resolve(@{ @"v2" : v2, @"v1" : v1 });
+    resolve(v2);
   });
 }
 
