@@ -51,6 +51,7 @@ import { RouxView } from 'react-native-roux-sdk';
 
 <RouxView
   style={{ flex: 1 }}
+  onScanStateChanged={this._onScanStateChanged}
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
   }
