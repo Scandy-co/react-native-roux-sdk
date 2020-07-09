@@ -221,6 +221,7 @@ class RouxView extends React.Component<Props> {
 //  but I hit a speedbump...
 type RouxType = {
   initializeScanner(): Promise<any>;
+  uninitializeScanner(): Promise<any>;
   startPreview(): Promise<any>;
   startScan(): Promise<any>;
   stopScan(): Promise<any>;
