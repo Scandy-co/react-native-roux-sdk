@@ -54,7 +54,7 @@ import { RouxView } from 'react-native-roux-sdk';
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
   }
-  onPreviewStart={this._onScannerStart}
+  onPreviewStart={this._onPreviewStart}
   onScannerStart={this._onScannerStart}
   onScannerStop={this._onScannerStop}
   onGenerateMesh={this._onGenerateMesh}
