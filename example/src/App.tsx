@@ -74,7 +74,7 @@ export default class App extends React.Component {
   };
 
   onSaveMesh = async () => {
-    // call back that generate mesh finished
+    // call back that save mesh finished
     console.log('MESH SAVED');
     this.restartScanner();
   };
