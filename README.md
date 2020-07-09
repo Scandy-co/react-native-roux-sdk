@@ -29,6 +29,12 @@ const result = await Roux.startPreview();
 // ...
 // Update the scan parameters
 
+// Toggle v2 scanning
+await Roux.toggleV2Scanning();
+
+// Get v2 scanning (returns true/false)
+const v2 = await Roux.getV2ScanningEnabled();
+
 // For V1 (aka bounded scanning)
 const boxSize = 1.5; // meters
 const result = await Roux.setSize(boxSize);
