@@ -283,8 +283,7 @@ RCT_EXPORT_METHOD(startScan
     if (startStatus == scandy::core::Status::SUCCESS) {
       return resolve(nil);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(startStatus)];
-      return reject(reason, reason, nil);
+      return reject([self formatStatusError:startStatus], [self formatStatusError:startStatus], nil);
     }
   });
 }
