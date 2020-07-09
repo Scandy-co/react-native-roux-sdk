@@ -46,7 +46,8 @@ const result = await Roux.setSize(voxelSize * 1e-3); // set size needs meters, s
 // ...
 // Start, stop, and save your model
 const result = await Roux.startScan();
-const result = await Roux.stopScan(); // generates your mesh & shows mesh in preview window
+const result = await Roux.stopScan();
+const result = await Roux.generateMesh();
 const result = await Roux.saveScan(destination);
 ```
 
