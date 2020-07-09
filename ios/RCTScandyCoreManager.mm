@@ -535,7 +535,15 @@ RCT_EXPORT_METHOD(getCurrentScanState
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
-  return [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+    NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+    if ([scanStateStr rangeOfString:@"scandy::core::ScanState"].location == NSNotFound){
+        return scanStateStr;
+    } else {
+        auto start = [scanStateStr rangeOfString:@":" options:NSBackwardsSearch].location + 3;
+        auto length = scanStateStr.length - start - 1;
+        NSRange substrRange = NSMakeRange(start, length);
+        return [scanStateStr substringWithRange:substrRange];
+    }
 }
 
 - (NSString*)formatStatusError:(scandy::core::Status)status
