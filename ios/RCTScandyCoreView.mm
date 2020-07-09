@@ -131,6 +131,32 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
+- (void)onSaveMesh:(scandy::core::Status)status
+{
+  //  NSLog(@"onSaveMesh");
+
+  if (self.scanView.onSaveMesh) {
+    self.scanView.onSaveMesh(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
+
+- (void)onGenerateMesh:(scandy::core::Status)status
+{
+  //  NSLog(@"onGenerateMesh");
+
+  if (self.scanView.onGenerateMesh) {
+    self.scanView.onGenerateMesh(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
+
 - (void)onHostDiscovered:(NSString*)host
 {
   //  NSLog(@"onHostDiscovered: %@", host);
