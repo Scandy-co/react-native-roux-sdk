@@ -67,7 +67,7 @@ class RouxView extends React.Component<Props> {
     onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
     onPreviewStart: () => console.log('ScandyCore: Preview Started'),
     onScannerStart: () => console.log('ScandyCore: Scanner Started'),
-    onScannerStop: () => console.log('ScandyCore: Scanner Stoped'),
+    onScannerStop: () => console.log('ScandyCore: Scanner Stopped'),
     onGenerateMesh: () => console.log('ScandyCore: Generated Mesh'),
     onSaveMesh: () => console.log('ScandyCore: Saved Mesh'),
     onMeshLoaded: () => console.log('Scandy Core: Mesh Loaded'),
@@ -229,6 +229,7 @@ type RouxType = {
   setSize(size: number): Promise<any>;
   loadMesh(dict: object): Promise<any>;
   toggleV2Scanning(enabled: boolean): Promise<any>;
+  getV2ScanningEnabled(): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;
