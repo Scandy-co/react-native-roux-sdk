@@ -19,7 +19,7 @@ npm install https://github.com/Scandy-co/react-native-roux-sdk
 ### Methods
 
 ```js
-import { Roux } from 'react-native-roux-sdk';
+import Roux from 'react-native-roux-sdk';
 
 // ...
 // Set up the scan preview
