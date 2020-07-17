@@ -283,8 +283,7 @@ RCT_EXPORT_METHOD(startScan
     if (startStatus == scandy::core::Status::SUCCESS) {
       return resolve(nil);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(startStatus)];
-      return reject(reason, reason, nil);
+      return reject([self formatStatusError:startStatus], [self formatStatusError:startStatus], nil);
     }
   });
 }
@@ -347,8 +346,7 @@ RCT_EXPORT_METHOD(getV2ScanningEnabled
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()
         ->m_use_unbounded;
     NSNumber* v2 = [NSNumber numberWithBool:unbounded];
-    NSNumber* v1 = [NSNumber numberWithBool:!unbounded];
-    resolve(@{ @"v2" : v2, @"v1" : v1 });
+    resolve(v2);
   });
 }
 
@@ -537,7 +535,15 @@ RCT_EXPORT_METHOD(getCurrentScanState
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
-  return [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+    NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+    if ([scanStateStr rangeOfString:@"scandy::core::ScanState"].location == NSNotFound){
+        return scanStateStr;
+    } else {
+        auto start = [scanStateStr rangeOfString:@":" options:NSBackwardsSearch].location + 3;
+        auto length = scanStateStr.length - start - 1;
+        NSRange substrRange = NSMakeRange(start, length);
+        return [scanStateStr substringWithRange:substrRange];
+    }
 }
 
 - (NSString*)formatStatusError:(scandy::core::Status)status

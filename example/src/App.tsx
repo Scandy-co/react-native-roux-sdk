@@ -2,27 +2,33 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Slider,
   Switch,
-  Button,
+  TouchableOpacity,
   Alert,
   Text,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
+
 import Roux, { RouxView } from 'react-native-roux-sdk';
 import RNFS from 'react-native-fs';
 
 export default class App extends React.Component {
   state = {
-    v2ScanningMode: true, // v2 scanning on by default
+    scanState: '',
+    v2ScanningMode: null, //v2ScanningMode defaults to true
     scanSize: 1.0, // scan size in mm or meters pending on scanning mode
   };
   constructor(props: Readonly<{}>) {
     super(props);
   }
 
+  handleScanStateChanged = (scanState) => {
+    console.log('Scan State: ', scanState);
+    this.setState({ scanState });
+  };
+
   setupPreview = async () => {
     try {
-      await Roux.toggleV2Scanning(this.state.v2ScanningMode);
       await Roux.initializeScanner();
       await Roux.startPreview();
     } catch (err) {
@@ -30,19 +36,56 @@ export default class App extends React.Component {
     }
   };
 
-  async onScannerStop() {
+  startScan = async () => {
+    try {
+      await Roux.startScan();
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  stopScan = async () => {
+    try {
+      await Roux.stopScan();
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  onPreviewStart = () => {
+    console.log('Preview Started');
+  };
+
+  onScannerStart = () => {
+    console.log('Scanner Started');
+  };
+
+  onScannerStop = async () => {
     try {
       await Roux.generateMesh();
     } catch (err) {
       console.warn(err);
     }
-  }
+  };
 
-  async onGenerateMesh() {
+  onGenerateMesh = () => {
     // call back that generate mesh finished
-  }
+    console.log('MESH GENERATED');
+  };
 
-  async saveScan() {
+  onSaveMesh = async () => {
+    // call back that save mesh finished
+    console.log('MESH SAVED');
+    this.restartScanner();
+  };
+
+  restartScanner = async () => {
+    //NOTE: you do not need to call initializeScanner again;
+    // scanner will remain initialized until RouxView unmounts
+    await Roux.startPreview();
+  };
+
+  saveScan = async () => {
     try {
       const dirPath = `${RNFS.DocumentDirectoryPath}/${Date.now()}`;
       await RNFS.mkdir(dirPath);
@@ -53,13 +96,13 @@ export default class App extends React.Component {
     } catch (err) {
       console.warn(err);
     }
-  }
+  };
 
   toggleV2Scanning = async () => {
     try {
-      const v2ScanningMode = !this.state.v2ScanningMode;
-      await Roux.toggleV2Scanning(v2ScanningMode);
-      this.setState({ v2ScanningMode });
+      const v2ScanningMode = await Roux.getV2ScanningEnabled();
+      await Roux.toggleV2Scanning(!v2ScanningMode);
+      this.setState({ v2ScanningMode: !v2ScanningMode });
       this.setSize(this.state.scanSize);
     } catch (err) {
       console.warn(err);
@@ -77,68 +120,70 @@ export default class App extends React.Component {
     }
   };
 
+  async componentDidMount() {
+    //Get default scanning mode and set state
+    const v2ScanningMode = await Roux.getV2ScanningEnabled();
+    this.setState({ v2ScanningMode });
+  }
+
   render() {
+    const { scanState } = this.state;
     return (
       <View style={styles.container}>
         <RouxView
           style={styles.roux}
+          onScanStateChanged={this.handleScanStateChanged}
           onVisualizerReady={this.setupPreview}
+          onPreviewStart={this.onPreviewStart}
+          onScannerStart={this.onScannerStart}
           onScannerStop={this.onScannerStop}
           onGenerateMesh={this.onGenerateMesh}
+          onSaveMesh={this.onSaveMesh}
         />
-        <View style={styles.actions}>
-          <View style={styles.row}>
-            <View style={styles.column}>
-              {this.state.v2ScanningMode ? (
-                <Text>size: {this.state.scanSize}mm</Text>
-              ) : (
-                <Text>size: {this.state.scanSize}m</Text>
-              )}
-
+        {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') && (
+          <>
+            <TouchableOpacity onPress={this.startScan} style={styles.button}>
+              <Text style={styles.buttonText}>START</Text>
+            </TouchableOpacity>
+            <View style={styles.sliderContainer}>
               <Slider
                 minimumValue={0.2}
                 maximumValue={4}
-                style={styles.slider}
                 onValueChange={this.setSize}
+                style={styles.slider}
               />
+              <Text style={styles.previewLabel}>
+                size: {this.state.scanSize}
+                {this.state.v2ScanningMode ? 'mm' : 'm'}
+              </Text>
             </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.column}>
+            <View style={styles.v2SwitchContainer}>
               <Switch
                 onValueChange={this.toggleV2Scanning}
                 value={this.state.v2ScanningMode}
               />
-              <Text>v2 scanning</Text>
+              <Text style={styles.previewLabel}>v2 scanning</Text>
             </View>
-            <View style={styles.column}>
-              <Switch />
-            </View>
-            <View style={styles.column}>
-              <Switch />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <Button
-              title="start scan"
-              onPress={() => {
-                Roux.startScan();
-              }}
-            />
-            <Button
-              title="stop scan"
-              onPress={() => {
-                Roux.stopScan();
-              }}
-            />
-            <Button
-              title="save scan"
-              onPress={() => {
-                this.saveScan();
-              }}
-            />
-          </View>
-        </View>
+          </>
+        )}
+        {scanState === 'SCANNING' && (
+          <TouchableOpacity onPress={this.stopScan} style={styles.button}>
+            <Text style={styles.buttonText}>STOP</Text>
+          </TouchableOpacity>
+        )}
+        {scanState === 'VIEWING' && (
+          <>
+            <TouchableOpacity onPress={this.saveScan} style={styles.button}>
+              <Text style={styles.buttonText}>SAVE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={this.restartScanner}
+              style={styles.newScanButton}
+            >
+              <Text style={styles.buttonText}>NEW SCAN</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     );
   }
@@ -148,9 +193,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  button: {
+    position: 'absolute',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 150,
+    width: 150,
+    height: 70,
+    backgroundColor: '#f2494a',
+  },
+  newScanButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 70,
+    width: 150,
+    height: 70,
+    backgroundColor: '#586168',
+  },
+  buttonText: {
+    fontSize: 24,
+    color: 'white',
+  },
+  // actions: { backgroundColor: "transparent" },
+  sliderContainer: {
+    position: 'absolute',
+    bottom: 70,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  previewLabel: {
+    color: 'white',
+    alignSelf: 'center',
+    fontSize: 20,
+  },
+  v2SwitchContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    top: 100,
+    right: 10,
+  },
   roux: { flex: 1, backgroundColor: 'blue' },
-  actions: { flex: 1, backgroundColor: 'white', padding: 16 },
-  slider: { flex: 1 },
-  row: { flex: 1, flexDirection: 'row', justifyContent: 'space-between' },
-  column: { flex: 1, flexDirection: 'column', justifyContent: 'space-between' },
 });

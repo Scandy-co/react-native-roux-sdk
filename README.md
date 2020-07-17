@@ -19,7 +19,7 @@ npm install https://github.com/Scandy-co/react-native-roux-sdk
 ### Methods
 
 ```js
-import { Roux } from 'react-native-roux-sdk';
+import Roux from 'react-native-roux-sdk';
 
 // ...
 // Set up the scan preview
@@ -28,6 +28,12 @@ const result = await Roux.startPreview();
 
 // ...
 // Update the scan parameters
+
+// Toggle v2 scanning
+await Roux.toggleV2Scanning();
+
+// Get v2 scanning (returns true/false)
+const v2 = await Roux.getV2ScanningEnabled();
 
 // For V1 (aka bounded scanning)
 const boxSize = 1.5; // meters
@@ -40,7 +46,8 @@ const result = await Roux.setSize(voxelSize * 1e-3); // set size needs meters, s
 // ...
 // Start, stop, and save your model
 const result = await Roux.startScan();
-const result = await Roux.stopScan(); // generates your mesh & shows mesh in preview window
+const result = await Roux.stopScan();
+const result = await Roux.generateMesh();
 const result = await Roux.saveScan(destination);
 ```
 
@@ -51,10 +58,11 @@ import { RouxView } from 'react-native-roux-sdk';
 
 <RouxView
   style={{ flex: 1 }}
+  onScanStateChanged={this._onScanStateChanged}
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
   }
-  onPreviewStart={this._onScannerStart}
+  onPreviewStart={this._onPreviewStart}
   onScannerStart={this._onScannerStart}
   onScannerStop={this._onScannerStop}
   onGenerateMesh={this._onGenerateMesh}
