@@ -76,7 +76,7 @@ In Build Settings for your project including this library, please change Build S
 
 Enable Bitcode: No
 
-Valid Architectures: arm64
+Valid Architectures: arm64 (no others)
 
 In `General`, add `ScandyCore.framework` to `Frameworks, Libraries and Embedded Content`.
 
