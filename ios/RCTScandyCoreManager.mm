@@ -560,6 +560,19 @@ RCT_EXPORT_METHOD(getCurrentScanState
   });
 }
 
+RCT_EXPORT_METHOD(getIPAddress                  
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+            auto ip_address = [ScandyCore getIPAddress];
+        if(ip_address == @"127.0.0.1"){
+            reject(@"", @"Not connected to wifi", nil);
+        } else {
+            resolve(ip_address);
+        }
+    });
+}
+
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
     NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
