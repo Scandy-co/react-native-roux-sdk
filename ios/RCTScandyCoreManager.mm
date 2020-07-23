@@ -44,21 +44,23 @@ RCTScandyCoreManager ()
 
 RCT_EXPORT_MODULE(ScandyCoreManager);
 
-
 + (void)setLicense
 {
   [ScandyCore setLicense];
 }
 
-- (void)initializeScanner
+- (void) initializeScanner {
+    [self initializeScanner:ScandyCoreScannerType::TRUE_DEPTH];
+}
+
+- (void)initializeScanner:(ScandyCoreScannerType)scanner_type
 {
   auto _initializeScanner = ^{
     [RCTScandyCoreManager setLicense];
 
     // Let's get the scanner fired up
     bool hasTrueDepth = [ScandyCoreManager hasTrueDepth];
-    auto scannerType = scandy::core::ScannerType::TRUE_DEPTH;
-
+      
     auto slam_config =
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
     // Make sure to reset all of these
@@ -70,7 +72,7 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     slam_config->m_save_input_plys = false;
     slam_config->m_save_input_images = false;
 
-    auto status = [ScandyCoreManager initializeScanner:scannerType];
+    auto status = [ScandyCoreManager initializeScanner:scanner_type];
     ScandyCoreManager.scandyCorePtr->setBoundingBoxOffset(0.20);
   };
   if ([NSThread isMainThread]) {
@@ -111,28 +113,53 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
   }
 }
 
+- (bool)scannerStringMatchesScannerType:(NSString*)type_string     :(ScandyCoreScannerType)scanner_type{
+    NSString *scannerTypeString = [NSString stringWithFormat:@"%s", scandy::core::getScannerTypeString(scanner_type)];
+  return [scannerTypeString compare:type_string options:NSCaseInsensitiveSearch] == NSOrderedSame;
+}
+
 RCT_EXPORT_METHOD(initializeScanner
+                  : (NSString*)scanner_type
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    auto slam_config =
-      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
-    auto licenseStatus = [ScandyCore setLicense];
-    if (licenseStatus == scandy::core::Status::SUCCESS){
-      [self initializeScanner];
-      bool inited = scandy::core::ScanState::INITIALIZED ==
-                    ScandyCoreManager.scandyCorePtr->getScanState();
-      if (inited) {
-        return resolve(nil);
-      } else {
-        return reject(@"-1", @"Could not initialize scanner", nil);
-      }
-    } else {
-      return reject(@"-1", @"Invalid license", nil);
-    }
-  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ScandyCoreScannerType scannerType;
+        ScandyCoreScannerType scannerTypes[] = { ScandyCoreScannerType::NETWORK, ScandyCoreScannerType::TRUE_DEPTH, ScandyCoreScannerType::IOS_LIDAR};
+        
+        if([self scannerStringMatchesScannerType
+            :scanner_type
+            :ScandyCoreScannerType::NETWORK]){
+            scannerType = ScandyCoreScannerType::NETWORK;
+        } else if([self scannerStringMatchesScannerType
+            :scanner_type
+            :ScandyCoreScannerType::IOS_LIDAR]){
+            scannerType = ScandyCoreScannerType::IOS_LIDAR;
+        } else if([self scannerStringMatchesScannerType
+            :scanner_type
+            :ScandyCoreScannerType::TRUE_DEPTH]){
+            scannerType = ScandyCoreScannerType::TRUE_DEPTH;
+        } else {
+            return reject(@"-1", @"Invalid scanner type", nil);
+        }
+        
+        auto slam_config =
+        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+        auto licenseStatus = [ScandyCore setLicense];
+        if (licenseStatus == scandy::core::Status::SUCCESS){
+            [self initializeScanner:scannerType];
+            bool inited = scandy::core::ScanState::INITIALIZED ==
+            ScandyCoreManager.scandyCorePtr->getScanState();
+            if (inited) {
+                return resolve(nil);
+            } else {
+                return reject(@"-1", @"Could not initialize scanner", nil);
+            }
+        } else {
+            return reject(@"-1", @"Invalid license", nil);
+        }
+    });
 }
 
 RCT_EXPORT_METHOD(initializeVolumetricCapture

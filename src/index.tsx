@@ -220,7 +220,7 @@ class RouxView extends React.Component<Props> {
 // Promise<any> could probable be Promise<void> instead
 //  but I hit a speedbump...
 type RouxType = {
-  initializeScanner(): Promise<any>;
+  initializeScanner(scanner_type: string): Promise<any>;
   uninitializeScanner(): Promise<any>;
   startPreview(): Promise<any>;
   startScan(): Promise<any>;
