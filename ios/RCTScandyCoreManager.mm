@@ -173,8 +173,8 @@ RCT_EXPORT_METHOD(initializeVolumetricCapture
 
     scandyCoreConfig->m_enable_volumetric_video_streaming = false;
     scandyCoreConfig->m_enable_volumetric_video_recording = true;
-
-    [self initializeScanner];
+    
+    [self initializeScanner:scandyCoreConfig->m_scanner_type];
     bool inited = ScandyCoreManager.scandyCorePtr->getScanState() ==
                   scandy::core::ScanState::INITIALIZED;
     if (inited) {
@@ -202,13 +202,15 @@ RCT_EXPORT_METHOD(reinitializeScanner
 {
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    auto slam_config =
+      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+    auto scanner_type = slam_config->m_scanner_type;
     ScandyCoreManager.scandyCorePtr->stopPipeline();
     ScandyCoreManager.scandyCorePtr->uninitializeScanner();
 
     // Set ScandyCore into Server or Client mode depending on whether its an
     // iPhoneX
-    auto slam_config =
-      ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+
     //    NSLog(@"props for reinit: %@", props);
 
     ScandyCoreManager.scandyCorePtr->clearCommandHosts();
@@ -250,7 +252,7 @@ RCT_EXPORT_METHOD(reinitializeScanner
       }
     }
 
-    [self initializeScanner];
+    [self initializeScanner:scanner_type];
     bool inited = ScandyCoreManager.scandyCorePtr->getScanState() ==
                   scandy::core::ScanState::INITIALIZED;
     if (inited) {
@@ -384,7 +386,7 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     bool enabled = _enabled.boolValue;
-    
+    ScandyCoreScannerType scannerType = ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->m_scanner_type;
     // get the current scan state so we can reset it after toggling
     auto scanState = ScandyCoreManager.scandyCorePtr->getScanState();
     const bool wasPreviewing = scanState == scandy::core::ScanState::PREVIEWING ||
@@ -401,7 +403,7 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 
     // Initialize if it was before toggling
     if (wasInited) {
-      [ScandyCore initializeScanner];
+      [ScandyCore initializeScanner:scannerType];
     }
 
     // Start the preview if it was before toggling
@@ -560,7 +562,7 @@ RCT_EXPORT_METHOD(getCurrentScanState
   });
 }
 
-RCT_EXPORT_METHOD(getIPAddress                  
+RCT_EXPORT_METHOD(getIPAddress
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
