@@ -191,7 +191,13 @@ RCT_EXPORT_METHOD(uninitializeScanner
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
-  ScandyCoreManager.scandyCorePtr->uninitializeScanner();
+    auto uninit = [ScandyCore uninitializeScanner];
+    if (uninit == scandy::core::Status::SUCCESS) {
+      return resolve(nil);
+    } else {
+      auto reason = [NSString stringWithUTF8String:getStatusStr(uninit)];
+      return reject(reason, reason, nil);
+    }
   resolve(nil);
 }
 
