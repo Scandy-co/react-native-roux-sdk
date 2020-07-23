@@ -210,7 +210,6 @@ RCT_EXPORT_METHOD(reinitializeScanner
 
     // Set ScandyCore into Server or Client mode depending on whether its an
     // iPhoneX
-
     //    NSLog(@"props for reinit: %@", props);
 
     ScandyCoreManager.scandyCorePtr->clearCommandHosts();
@@ -572,6 +571,50 @@ RCT_EXPORT_METHOD(getIPAddress
         } else {
             resolve(ip_address);
         }
+    });
+}
+
+RCT_EXPORT_METHOD(setSendRenderedStream
+                  : (NSNumber* _Nonnull)_enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        bool enabled = _enabled.boolValue;
+        [ScandyCore setSendRenderedStream:enabled];
+        resolve(nil);
+    });
+}
+
+RCT_EXPORT_METHOD(setSendNetworkCommands
+                  : (NSNumber* _Nonnull)_enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        bool enabled = _enabled.boolValue;
+        [ScandyCore setSendNetworkCommands:enabled];
+        resolve(nil);
+    });
+}
+
+RCT_EXPORT_METHOD(setReceiveRenderedStream
+                  : (NSNumber* _Nonnull)_enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        bool enabled = _enabled.boolValue;
+        [ScandyCore setReceiveRenderedStream:enabled];
+        resolve(nil);
+    });
+}
+
+RCT_EXPORT_METHOD(setReceiveNetworkCommands
+                  : (NSNumber* _Nonnull)_enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        bool enabled = _enabled.boolValue;
+        [ScandyCore setReceiveNetworkCommands:enabled];
+        resolve(nil);
     });
 }
 
