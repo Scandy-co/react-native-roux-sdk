@@ -187,11 +187,11 @@ RCT_EXPORT_METHOD(uninitializeScanner
                   : (RCTPromiseRejectBlock)reject)
 {
     auto uninit = [ScandyCore uninitializeScanner];
+    auto statusString = [self formatStatusError:uninit];
     if (uninit == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(uninit)];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
 }
 
