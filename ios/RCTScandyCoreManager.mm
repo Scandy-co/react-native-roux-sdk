@@ -64,10 +64,6 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     auto slam_config =
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
     // Make sure to reset all of these
-    slam_config->m_send_network_commands = false;
-    slam_config->m_receive_rendered_stream = false;
-    slam_config->m_send_rendered_stream = false;
-    slam_config->m_receive_network_commands = false;
     slam_config->m_use_texturing = false;
     slam_config->m_save_input_plys = false;
     slam_config->m_save_input_images = false;
