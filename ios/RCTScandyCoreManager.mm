@@ -655,6 +655,19 @@ RCT_EXPORT_METHOD(setServerHost
     });
 }
 
+RCT_EXPORT_METHOD(getDiscoveredHosts
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto discovered_hosts = [ScandyCore getDiscoveredHosts];
+        if(discovered_hosts.count){
+          resolve(discovered_hosts);
+        } else {
+          resolve(nil);
+        }
+    });
+}
+
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
     NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
