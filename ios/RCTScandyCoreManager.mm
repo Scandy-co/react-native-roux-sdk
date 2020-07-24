@@ -624,6 +624,22 @@ RCT_EXPORT_METHOD(setReceiveNetworkCommands
     });
 }
 
+RCT_EXPORT_METHOD(setServerHost
+                  : (NSString*)ip_address resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ScandyCoreStatus status = [ScandyCore setServerHost:ip_address];
+        auto statusString = [NSString stringWithUTF8String:getStatusStr(status)];
+        if (status == scandy::core::Status::SUCCESS) {
+          return resolve(statusString);
+        } else {
+          return reject(statusString, statusString, nil);
+        }
+        resolve(nil);
+    });
+}
+
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
     NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
