@@ -47,6 +47,7 @@ RCTScandyCoreView ()<ScandyCoreDelegate>
 RCT_EXPORT_MODULE();
 RCT_EXPORT_VIEW_PROPERTY(onPreviewStart, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onScannerStart, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onScannerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onScannerStop, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGenerateMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSaveMesh, RCTBubblingEventBlock);
@@ -118,6 +119,20 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
     });
   }
 }
+
+- (void)onScannerReady:(scandy::core::Status)status
+{
+   NSLog(@"onScannerReady");
+
+  if (self.scanView.onScannerReady) {
+    self.scanView.onScannerReady(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
+
 - (void)onScannerStop:(scandy::core::Status)status
 {
   //  NSLog(@"onScannerStop");

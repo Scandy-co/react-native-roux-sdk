@@ -36,6 +36,10 @@ type Props = {
    */
   onScannerStart?: Function;
   /**
+   * Core is initialized
+   */
+  onScannerReady?: Function;
+  /**
    * Core finished live meshing
    */
   onScannerStop?: Function;
@@ -67,6 +71,7 @@ class RouxView extends React.Component<Props> {
     onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
     onPreviewStart: () => console.log('ScandyCore: Preview Started'),
     onScannerStart: () => console.log('ScandyCore: Scanner Started'),
+    onScannerReady: () => console.log('ScandyCore: Scanner Ready'),
     onScannerStop: () => console.log('ScandyCore: Scanner Stopped'),
     onGenerateMesh: () => console.log('ScandyCore: Generated Mesh'),
     onSaveMesh: () => console.log('ScandyCore: Saved Mesh'),
@@ -111,6 +116,13 @@ class RouxView extends React.Component<Props> {
   _onScannerStart = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onScannerStart) {
       this.props.onScannerStart(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onScannerReady = ({ nativeEvent }: { nativeEvent: object }) => {
+    if (this.props.onScannerReady) {
+      this.props.onScannerReady(nativeEvent);
     }
     this._updateCoreState();
   };
@@ -175,14 +187,6 @@ class RouxView extends React.Component<Props> {
     }
   };
 
-  _startPreview = () => {
-    ScandyCoreManager.startPreview().then(() => {
-      if (this.props.onPreviewStart) {
-        this.props.onPreviewStart();
-      }
-    });
-  };
-
   render() {
     const { style } = this.props;
     return (
@@ -200,6 +204,7 @@ class RouxView extends React.Component<Props> {
           onVisualizerReady={this._onVisualizerReady}
           onPreviewStart={this._onPreviewStart}
           onScannerStart={this._onScannerStart}
+          onScannerReady={this._onScannerReady}
           onScannerStop={this._onScannerStop}
           onGenerateMesh={this._onGenerateMesh}
           onSaveMesh={this._onSaveMesh}
