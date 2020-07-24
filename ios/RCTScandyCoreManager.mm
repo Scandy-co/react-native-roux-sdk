@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     [RCTScandyCoreManager setLicense];
 
     // Let's get the scanner fired up
-    bool hasTrueDepth = [ScandyCoreManager hasTrueDepth];
+//    bool hasTrueDepth = [ScandyCoreManager hasTrueDepth];
       
     auto slam_config =
       ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
@@ -72,7 +72,7 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
     slam_config->m_save_input_plys = false;
     slam_config->m_save_input_images = false;
 
-    auto status = [ScandyCoreManager initializeScanner:scanner_type];
+    [ScandyCoreManager initializeScanner:scanner_type];
     ScandyCoreManager.scandyCorePtr->setBoundingBoxOffset(0.20);
   };
   if ([NSThread isMainThread]) {
@@ -103,7 +103,7 @@ RCT_EXPORT_MODULE(ScandyCoreManager);
       }
     }
 
-    auto status = [ScandyCoreManager startPreview];
+    [ScandyCoreManager startPreview];
     NSLog(@"startPreview");
   };
   if ([NSThread isMainThread]) {
@@ -126,8 +126,7 @@ RCT_EXPORT_METHOD(initializeScanner
 
     dispatch_async(dispatch_get_main_queue(), ^{
         ScandyCoreScannerType scannerType;
-        ScandyCoreScannerType scannerTypes[] = { ScandyCoreScannerType::NETWORK, ScandyCoreScannerType::TRUE_DEPTH, ScandyCoreScannerType::IOS_LIDAR};
-        
+
         if([self scannerStringMatchesScannerType
             :scanner_type
             :ScandyCoreScannerType::NETWORK]){
@@ -152,7 +151,7 @@ RCT_EXPORT_METHOD(initializeScanner
             bool inited = scandy::core::ScanState::INITIALIZED ==
             ScandyCoreManager.scandyCorePtr->getScanState();
             if (inited) {
-                return resolve(nil);
+                return resolve([self formatStatusError:scandy::core::Status::SUCCESS]);
             } else {
                 return reject(@"-1", @"Could not initialize scanner", nil);
             }
@@ -198,7 +197,6 @@ RCT_EXPORT_METHOD(uninitializeScanner
       auto reason = [NSString stringWithUTF8String:getStatusStr(uninit)];
       return reject(reason, reason, nil);
     }
-  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(reinitializeScanner
@@ -574,7 +572,7 @@ RCT_EXPORT_METHOD(getIPAddress
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
             auto ip_address = [ScandyCore getIPAddress];
-        if(ip_address == @"127.0.0.1"){
+        if([ip_address  isEqual: @"127.0.0.1"]){
             reject(@"", @"Not connected to wifi", nil);
         } else {
             resolve(ip_address);
@@ -595,7 +593,6 @@ RCT_EXPORT_METHOD(setSendRenderedStream
         } else {
           return reject(statusString, statusString, nil);
         }
-        resolve(nil);
     });
 }
 
@@ -612,7 +609,6 @@ RCT_EXPORT_METHOD(setSendNetworkCommands
         } else {
           return reject(statusString, statusString, nil);
         }
-        resolve(nil);
     });
 }
 
@@ -629,7 +625,6 @@ RCT_EXPORT_METHOD(setReceiveRenderedStream
         } else {
           return reject(statusString, statusString, nil);
         }
-        resolve(nil);
     });
 }
 
@@ -646,7 +641,6 @@ RCT_EXPORT_METHOD(setReceiveNetworkCommands
         } else {
           return reject(statusString, statusString, nil);
         }
-        resolve(nil);
     });
 }
 
@@ -662,7 +656,6 @@ RCT_EXPORT_METHOD(setServerHost
         } else {
           return reject(statusString, statusString, nil);
         }
-        resolve(nil);
     });
 }
 
