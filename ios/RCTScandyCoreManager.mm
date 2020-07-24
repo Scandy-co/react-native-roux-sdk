@@ -630,8 +630,8 @@ RCT_EXPORT_METHOD(setServerHost
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         ScandyCoreStatus status = [ScandyCore setServerHost:ip_address];
-        auto statusString = [NSString stringWithUTF8String:getStatusStr(status)];
-        if (status == scandy::core::Status::SUCCESS) {
+        auto statusString = [self formatStatusError:status];
+        if (status == ScandyCoreStatus::SUCCESS) {
           return resolve(statusString);
         } else {
           return reject(statusString, statusString, nil);
