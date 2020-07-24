@@ -280,7 +280,8 @@ RCT_EXPORT_METHOD(startPreview
     [self startPreview];
     auto state = ScandyCoreManager.scandyCorePtr->getScanState();
     if (state == scandy::core::ScanState::PREVIEWING) {
-      resolve(nil);
+      auto statusString = [self formatStatusError:ScandyCoreStatus::SUCCESS];
+      resolve(statusString);
     } else {
       NSString* msg = [NSString
         stringWithFormat:@"Could not start preview. ScandyCore state: %@",
@@ -314,10 +315,11 @@ RCT_EXPORT_METHOD(startScan
     // And now the screen can go to sleep
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     auto startStatus = [ScandyCore startScanning];
+    auto statusString = [self formatStatusError:startStatus];
     if (startStatus == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      return reject([self formatStatusError:startStatus], [self formatStatusError:startStatus], nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
@@ -330,11 +332,11 @@ RCT_EXPORT_METHOD(stopScan
     // And now the screen can go to sleep
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     auto stopStatus = [ScandyCore stopScanning];
+    auto statusString = [self formatStatusError:stopStatus];
     if (stopStatus == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(stopStatus)];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
@@ -345,11 +347,11 @@ RCT_EXPORT_METHOD(generateMesh
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     auto status = [ScandyCore generateMesh];
+    auto statusString = [self formatStatusError:status];
     if (status == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(status)];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
@@ -361,11 +363,11 @@ RCT_EXPORT_METHOD(saveScan
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     auto status = [ScandyCore saveMesh:file_path];
+    auto statusString = [self formatStatusError:status];
     if (status == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      auto reason = [NSString stringWithUTF8String:getStatusStr(status)];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
@@ -408,20 +410,20 @@ RCT_EXPORT_METHOD(toggleV2Scanning
 
     // Initialize if it was before toggling
     if (wasInited) {
-      [ScandyCore initializeScanner:scannerType];
+      status = [ScandyCore initializeScanner:scannerType];
     }
 
     // Start the preview if it was before toggling
     if (wasPreviewing) {
-      [ScandyCore startPreview];
+      status = [ScandyCore startPreview];
     }
 
+    auto statusString = [self formatStatusError:status];
+
     if (status == scandy::core::Status::SUCCESS) {
-      return resolve(nil);
+      return resolve(statusString);
     } else {
-      auto reason = [[NSString alloc]
-        initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
@@ -438,12 +440,12 @@ RCT_EXPORT_METHOD(setSize
   } else {
     status = ScandyCoreManager.scandyCorePtr->setScanSize(size);
   }
+  auto statusString = [self formatStatusError:status];
+
   if (status == scandy::core::Status::SUCCESS) {
-    resolve(nil);
+    return resolve(statusString);
   } else {
-    auto reason = [[NSString alloc]
-      initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
-    return reject(reason, reason, nil);
+    return reject(statusString, statusString, nil);
   }
 }
 
@@ -481,13 +483,14 @@ RCT_EXPORT_METHOD(loadMesh
           std::string([meshPath UTF8String]));
       }
     }
+   
+    auto statusString = [self formatStatusError:status];
 
     if (status == scandy::core::Status::SUCCESS) {
       //      [self renderScanView];
-      resolve(nil);
+      resolve(statusString);
     } else {
-      reject(
-        [self formatStatusError:status], [self formatStatusError:status], nil);
+      reject(statusString, statusString, nil);
     }
   });
 }
@@ -535,17 +538,16 @@ RCT_EXPORT_METHOD(exportVolumetricVideo
 
     scandy::core::Status status =
       ScandyCoreManager.scandyCorePtr->exportVolumetricVideo(opts);
+    auto statusString = [self formatStatusError:status];
     if (status == scandy::core::Status::SUCCESS) {
       resolve(@{
         @"directory" : [NSString stringWithUTF8String:dirPath.c_str()],
         @"success" :
           [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-        @"status" : [self formatStatusError:status]
+        @"status" : statusString
       });
     } else {
-      auto reason = [[NSString alloc]
-        initWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
-      return reject(reason, reason, nil);
+      return reject(statusString, statusString, nil);
     }
   });
 }
