@@ -586,7 +586,13 @@ RCT_EXPORT_METHOD(setSendRenderedStream
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         bool enabled = _enabled.boolValue;
-        [ScandyCore setSendRenderedStream:enabled];
+        ScandyCoreStatus status = [ScandyCore setSendRenderedStream:enabled];
+        auto statusString = [self formatStatusError:status];
+        if (status == scandy::core::Status::SUCCESS) {
+          return resolve(statusString);
+        } else {
+          return reject(statusString, statusString, nil);
+        }
         resolve(nil);
     });
 }
@@ -597,7 +603,13 @@ RCT_EXPORT_METHOD(setSendNetworkCommands
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         bool enabled = _enabled.boolValue;
-        [ScandyCore setSendNetworkCommands:enabled];
+        ScandyCoreStatus status = [ScandyCore setSendNetworkCommands:enabled];
+        auto statusString = [self formatStatusError:status];
+        if (status == scandy::core::Status::SUCCESS) {
+          return resolve(statusString);
+        } else {
+          return reject(statusString, statusString, nil);
+        }
         resolve(nil);
     });
 }
@@ -608,7 +620,13 @@ RCT_EXPORT_METHOD(setReceiveRenderedStream
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         bool enabled = _enabled.boolValue;
-        [ScandyCore setReceiveRenderedStream:enabled];
+        ScandyCoreStatus status = [ScandyCore setReceiveRenderedStream:enabled];
+        auto statusString = [self formatStatusError:status];
+        if (status == scandy::core::Status::SUCCESS) {
+          return resolve(statusString);
+        } else {
+          return reject(statusString, statusString, nil);
+        }
         resolve(nil);
     });
 }
@@ -619,7 +637,13 @@ RCT_EXPORT_METHOD(setReceiveNetworkCommands
                   : (RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         bool enabled = _enabled.boolValue;
-        [ScandyCore setReceiveNetworkCommands:enabled];
+        ScandyCoreStatus status = [ScandyCore setReceiveNetworkCommands:enabled];
+        auto statusString = [self formatStatusError:status];
+        if (status == scandy::core::Status::SUCCESS) {
+          return resolve(statusString);
+        } else {
+          return reject(statusString, statusString, nil);
+        }
         resolve(nil);
     });
 }
