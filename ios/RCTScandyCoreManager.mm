@@ -668,6 +668,35 @@ RCT_EXPORT_METHOD(getDiscoveredHosts
     });
 }
 
+RCT_EXPORT_METHOD(connectToCommandHost
+                  : (NSString*)ip_address resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ScandyCore connectToCommandHost:ip_address];
+        return resolve([self formatStatusError:ScandyCoreStatus::SUCCESS]);
+    });
+}
+
+RCT_EXPORT_METHOD(hasNetworkConnection
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto is_connected = [ScandyCore hasNetworkConnection];
+        return resolve([NSNumber numberWithBool:is_connected]);
+    });
+}
+
+RCT_EXPORT_METHOD(clearCommandHosts
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ScandyCore clearCommandHosts];
+        return resolve([self formatStatusError:ScandyCoreStatus::SUCCESS]);
+    });
+}
+
+
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
     NSString* scanStateStr = [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
