@@ -51,7 +51,7 @@ RCT_EXPORT_VIEW_PROPERTY(onScannerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onScannerStop, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGenerateMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSaveMesh, RCTBubblingEventBlock);
-// RCT_EXPORT_VIEW_PROPERTY(onLoadMesh, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onLoadMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onExportVolumetricVideo, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onClientConnected, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onHostDiscovered, RCTBubblingEventBlock);
@@ -220,17 +220,17 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 }
 
 //Doesn't seem to be working
-// - (void)onLoadMesh:(scandy::core::Status)status
-// {
-//   //  NSLog(@"onSaveMesh");
-//   if (self.scanView.onLoadMesh) {
-//     self.scanView.onLoadMesh(@{
-//       @"success" :
-//         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-//       @"status" : [self formatStatusError:status]
-//     });
-//   }
-// }
+- (void)onLoadMesh:(scandy::core::Status)status
+{
+  //  NSLog(@"onSaveMesh");
+  if (self.scanView.onLoadMesh) {
+    self.scanView.onLoadMesh(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
 
 - (UIView*)view
 {
