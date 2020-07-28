@@ -599,7 +599,7 @@ RCT_EXPORT_METHOD(getSendRenderedStream
     dispatch_async(dispatch_get_main_queue(), ^{
         auto result = [ScandyCore getSendRenderedStream];
         NSNumber* enabled = [NSNumber numberWithBool:result];
-        resolve(enabled)
+        resolve(enabled);
     });
 }
 
@@ -625,7 +625,7 @@ RCT_EXPORT_METHOD(getSendNetworkCommands
     dispatch_async(dispatch_get_main_queue(), ^{
         auto result = [ScandyCore getSendNetworkCommands];
         NSNumber* enabled = [NSNumber numberWithBool:result];
-        resolve(enabled)
+        resolve(enabled);
     });
 }
 
@@ -652,7 +652,7 @@ RCT_EXPORT_METHOD(getReceiveRenderedStream
     dispatch_async(dispatch_get_main_queue(), ^{
         auto result = [ScandyCore getReceiveRenderedStream];
         NSNumber* enabled = [NSNumber numberWithBool:result];
-        resolve(enabled)
+        resolve(enabled);
     });
 }
 
@@ -678,7 +678,7 @@ RCT_EXPORT_METHOD(getReceiveNetworkCommands
     dispatch_async(dispatch_get_main_queue(), ^{
         auto result = [ScandyCore getReceiveNetworkCommands];
         NSNumber* enabled = [NSNumber numberWithBool:result];
-        resolve(enabled)
+        resolve(enabled);
     });
 }
 
