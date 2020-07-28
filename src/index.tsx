@@ -52,7 +52,7 @@ type Props = {
    */
   onSaveMesh?: Function;
   onExportVolumetricVideo?: Function;
-  onMeshLoaded: Function;
+  // onLoadMesh?: Function;
   onScanStateChanged?: Function;
   onClientConnected?: Function;
   onHostDiscovered?: Function;
@@ -75,7 +75,7 @@ class RouxView extends React.Component<Props> {
     onScannerStop: () => console.log('ScandyCore: Scanner Stopped'),
     onGenerateMesh: () => console.log('ScandyCore: Generated Mesh'),
     onSaveMesh: () => console.log('ScandyCore: Saved Mesh'),
-    onMeshLoaded: () => console.log('Scandy Core: Mesh Loaded'),
+    // onLoadMesh: () => console.log('Scandy Core: Mesh Loaded'),
     onScanStateChanged: (state: string) =>
       console.log('Scandy Core: State Changed ', state),
     onClientConnected: () => console.log('ScandyCore: Client Connected'),

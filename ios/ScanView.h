@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTBubblingEventBlock onScannerStop;
 @property (nonatomic, copy) RCTBubblingEventBlock onGenerateMesh;
 @property (nonatomic, copy) RCTBubblingEventBlock onSaveMesh;
+// @property (nonatomic, copy) RCTBubblingEventBlock onLoadMesh;
 @property (nonatomic, copy) RCTBubblingEventBlock onExportVolumetricVideo;
 @property (nonatomic, copy) RCTBubblingEventBlock onClientConnected;
 @property (nonatomic, copy) RCTBubblingEventBlock onHostDiscovered;
