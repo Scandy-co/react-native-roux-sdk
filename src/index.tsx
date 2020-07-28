@@ -236,6 +236,16 @@ type RouxType = {
   loadMesh(dict: object): Promise<any>;
   toggleV2Scanning(enabled: boolean): Promise<any>;
   getV2ScanningEnabled(): Promise<any>;
+  getIPAddress(): Promise<any>;
+  setSendRenderedStream(enabled: boolean): Promise<any>;
+  setSendNetworkCommands(enabled: boolean): Promise<any>;
+  setReceiveRenderedStream(enabled: boolean): Promise<any>;
+  setReceiveNetworkCommands(enabled: boolean): Promise<any>;
+  setServerHost(ip_address: string): Promise<any>;
+  getDiscoveredHosts(): Promise<any>;
+  connectToCommandHost(ip_address: string): Promise<any>;
+  clearCommandHosts(): Promise<any>;
+  hasNetworkConnection(): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;
