@@ -285,21 +285,22 @@ RCT_EXPORT_METHOD(startPreview
   });
 }
 
-RCT_EXPORT_METHOD(startRecording
-                  : (NSString*)output_dir resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
-{
-  auto slam_config =
-    ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
+// Doesn't look like this is implemented
+// RCT_EXPORT_METHOD(startRecording
+//                   : (NSString*)output_dir resolve
+//                   : (RCTPromiseResolveBlock)resolve reject
+//                   : (RCTPromiseRejectBlock)reject)
+// {
+//   auto slam_config =
+//     ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
 
-  // If we are recording, make sure to update the output dir
-  if (slam_config->m_enable_volumetric_video_recording) {
-    slam_config->m_scan_dir_path = output_dir.UTF8String;
-    FileOps::EnsureDirectory(slam_config->m_scan_dir_path);
-  }
-  slam_config->m_preview_mode = false;
-}
+//   // If we are recording, make sure to update the output dir
+//   if (slam_config->m_enable_volumetric_video_recording) {
+//     slam_config->m_scan_dir_path = output_dir.UTF8String;
+//     FileOps::EnsureDirectory(slam_config->m_scan_dir_path);
+//   }
+//   slam_config->m_preview_mode = false;
+// }
 
 RCT_EXPORT_METHOD(startScan
                   : (RCTPromiseResolveBlock)resolve rejecter

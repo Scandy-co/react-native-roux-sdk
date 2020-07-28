@@ -180,14 +180,16 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-- (void)onClientConnected:(NSString*)client
+//This doesn't seem to be working right now - never gets triggered
+- (void)onClientConnected:(NSString*)host
 {
-  //  NSLog(@"onHostDiscovered: %@", host);
+  //  NSLog(@"onClientConnected: %@", host);
   if (self.scanView.onClientConnected) {
-    self.scanView.onClientConnected(@{ @"client" : client });
+    self.scanView.onClientConnected(@{ @"host" : host });
   }
 }
 
+//Doesn't seem to work - always returns 0.00
 - (void)onVolumeMemoryDidUpdate:(const float)percent_full
 {
   //  NSLog(@"onVolumeMemoryDidUpdate");
