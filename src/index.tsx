@@ -148,7 +148,6 @@ class RouxView extends React.Component<Props> {
     this._updateCoreState();
   };
 
-
   _onLoadMesh = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onLoadMesh) {
       this.props.onLoadMesh(nativeEvent);
@@ -247,9 +246,13 @@ type RouxType = {
   getV2ScanningEnabled(): Promise<any>;
   getIPAddress(): Promise<any>;
   setSendRenderedStream(enabled: boolean): Promise<any>;
+  getSendRenderedStream(enabled: boolean): Promise<any>;
   setSendNetworkCommands(enabled: boolean): Promise<any>;
+  getSendNetworkCommands(): Promise<any>;
   setReceiveRenderedStream(enabled: boolean): Promise<any>;
+  getReceiveRenderedStream(): Promise<any>;
   setReceiveNetworkCommands(enabled: boolean): Promise<any>;
+  getReceiveNetworkCommands(): Promise<any>;
   setServerHost(ip_address: string): Promise<any>;
   getDiscoveredHosts(): Promise<any>;
   getConnectedClients(): Promise<any>;

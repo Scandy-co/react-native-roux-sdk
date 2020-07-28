@@ -593,6 +593,16 @@ RCT_EXPORT_METHOD(setSendRenderedStream
     });
 }
 
+RCT_EXPORT_METHOD(getSendRenderedStream
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto result = [ScandyCore getSendRenderedStream];
+        NSNumber* enabled = [NSNumber numberWithBool:result];
+        resolve(enabled)
+    });
+}
+
 RCT_EXPORT_METHOD(setSendNetworkCommands
                   : (NSNumber* _Nonnull)_enabled resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
@@ -606,6 +616,16 @@ RCT_EXPORT_METHOD(setSendNetworkCommands
         } else {
           return reject(statusString, statusString, nil);
         }
+    });
+}
+
+RCT_EXPORT_METHOD(getSendNetworkCommands
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto result = [ScandyCore getSendNetworkCommands];
+        NSNumber* enabled = [NSNumber numberWithBool:result];
+        resolve(enabled)
     });
 }
 
@@ -625,6 +645,17 @@ RCT_EXPORT_METHOD(setReceiveRenderedStream
     });
 }
 
+
+RCT_EXPORT_METHOD(getReceiveRenderedStream
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto result = [ScandyCore getReceiveRenderedStream];
+        NSNumber* enabled = [NSNumber numberWithBool:result];
+        resolve(enabled)
+    });
+}
+
 RCT_EXPORT_METHOD(setReceiveNetworkCommands
                   : (NSNumber* _Nonnull)_enabled resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
@@ -638,6 +669,16 @@ RCT_EXPORT_METHOD(setReceiveNetworkCommands
         } else {
           return reject(statusString, statusString, nil);
         }
+    });
+}
+
+RCT_EXPORT_METHOD(getReceiveNetworkCommands
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto result = [ScandyCore getReceiveNetworkCommands];
+        NSNumber* enabled = [NSNumber numberWithBool:result];
+        resolve(enabled)
     });
 }
 
