@@ -180,6 +180,33 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
+- (void)onClientConnected:(NSString*)client
+{
+  //  NSLog(@"onHostDiscovered: %@", host);
+  if (self.scanView.onClientConnected) {
+    self.scanView.onClientConnected(@{ @"client" : client });
+  }
+}
+
+- (void)onVolumeMemoryDidUpdate:(const float)percent_full
+{
+  //  NSLog(@"onVolumeMemoryDidUpdate");
+  if (self.scanView.onVolumeMemoryDidUpdate) {
+    NSString* percent_string =
+      [NSString stringWithFormat:@"%.02f", percent_full];
+    self.scanView.onVolumeMemoryDidUpdate(
+      @{ @"percent_full" : percent_string });
+  }
+}
+
+- (void)onVidSavedToCamRoll:(bool)success
+{
+  if (self.scanView.onVidSavedToCamRoll) {
+    self.scanView.onVidSavedToCamRoll(
+      @{ @"success" : [NSNumber numberWithBool:success] });
+  }
+}
+
 - (void)onTrackingDidUpdate:(float)confidence withTracking:(bool)is_tracking
 {
   self.isTracking = is_tracking;
