@@ -9,7 +9,8 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "@react-native-community/slider": "^3.0.0",
+    "@react-native-community/segmented-control": "^2.1.0",
+    "@react-native-community/slider": "^3.0.3",
     "react": "16.11.0",
     "react-native": "0.62.0",
     "react-native-fs": "^2.16.6",
