@@ -252,6 +252,7 @@ type RouxType = {
   setReceiveNetworkCommands(enabled: boolean): Promise<any>;
   setServerHost(ip_address: string): Promise<any>;
   getDiscoveredHosts(): Promise<any>;
+  getConnectedClients(): Promise<any>;
   connectToCommandHost(ip_address: string): Promise<any>;
   clearCommandHosts(): Promise<any>;
   hasNetworkConnection(): Promise<any>;

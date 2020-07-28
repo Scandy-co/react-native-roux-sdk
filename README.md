@@ -58,7 +58,8 @@ const result = await Roux.setReceiveNetworkCommands(true || false);
 const result = await Roux.setReceiveRenderedStream(true || false);
 const result = await Roux.setSendNetworkCommands(true || false);
 const result = await Roux.setServerHost(ip_address); //where ip_address is a string
-const discovered_hosts = await Roux.getDiscoveredHosts();
+const hosts = await Roux.getDiscoveredHosts();
+const clients = await Roux.getConnectedClients();
 const result = await Roux.connectToCommandHost(ip_address); //where ip_address is a string
 const is_connected = await Roux.hasNetworkConnection();
 const result = await Roux.clearCommandHosts();
@@ -168,6 +169,9 @@ Connects to a mirror device to receive commands from.
 
 #### `getDiscoveredHosts(): Promise<string[]>`
 Returns an array containing the IP addresses of available mirror devices.
+
+#### `getConnectedClients(): Promise<string[]>`
+Returns an array containing the IP addresses of connected scanning devices.
 
 #### `hasNetworkConnection(): Promise<Bool>`
 Returns true if the device is actively connected to a networking clients, false if not.

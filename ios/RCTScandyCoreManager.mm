@@ -656,6 +656,19 @@ RCT_EXPORT_METHOD(setServerHost
     });
 }
 
+RCT_EXPORT_METHOD(getConnectedClients
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        auto connected_clients = [ScandyCore getConnectedClients];
+        if(connected_clients.count){
+          resolve(connected_clients);
+        } else {
+          resolve(nil);
+        }
+    });
+}
+
 RCT_EXPORT_METHOD(getDiscoveredHosts
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
