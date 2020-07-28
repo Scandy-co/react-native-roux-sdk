@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -6,245 +6,231 @@ import {
   TouchableOpacity,
   Alert,
   Text,
-  Picker,
-} from 'react-native'
-import Slider from '@react-native-community/slider'
-import SegmentedControl from '@react-native-community/segmented-control'
+  Button,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
+import Slider from '@react-native-community/slider';
+import Drawer from 'react-native-drawer';
 
-import Roux, { RouxView } from 'react-native-roux-sdk'
-import RNFS from 'react-native-fs'
+import Roux, { RouxView } from 'react-native-roux-sdk';
+import RNFS from 'react-native-fs';
 
+const SCAN_DIR = `${RNFS.DocumentDirectoryPath}/meshes`;
 export default class App extends React.Component {
   constructor(props: Readonly<{}>) {
-    super(props)
+    super(props);
     this.state = {
-      selectedDeviceType: 0,
-      deviceIPAddress: '',
-      connectedIPAddress: '',
-      connectedToHost: false,
-      displayIPPicker: true,
-      discoveredHosts: [],
       scanState: '',
+      savedMeshes: [],
+      renderLoadedMesh: false,
       v2ScanningMode: null, //v2ScanningMode defaults to true
       scanSize: 1.0, // scan size in mm or meters pending on scanning mode
-    }
+    };
   }
 
   handleScanStateChanged = (scanState) => {
-    console.log('Scan State: ', scanState)
-    this.setState({ scanState })
-  }
+    console.log('Scan State: ', scanState);
+    this.setState({ scanState });
+  };
 
-  initializeMirrorDevice = async () => {
-    await Roux.setSendRenderedStream(false)
-    await Roux.setReceiveNetworkCommands(false)
-    await Roux.setReceiveRenderedStream(true)
-    await Roux.setSendNetworkCommands(true)
-
-    scannerType = 'network'
-
+  initializeScanner = async () => {
     try {
-      //TODO: test error catching with no wifi
-      var deviceIPAddress = await Roux.getIPAddress()
-      this.setState({ deviceIPAddress })
-      await Roux.setServerHost(deviceIPAddress)
-    } catch (e) {
-      console.log(e)
-      this.setState({ deviceIPAddress: 'NOT CONNECTED TO WIFI' })
-    }
-    try {
-      await Roux.initializeScanner('network')
-      await Roux.startPreview()
+      await Roux.initializeScanner('true_depth');
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
-  initializeScanningDevice = async () => {
-    await Roux.setSendRenderedStream(true)
-    await Roux.setReceiveNetworkCommands(true)
-    await Roux.setReceiveRenderedStream(false)
-    await Roux.setSendNetworkCommands(false)
-    try {
-      await Roux.initializeScanner('true_depth')
-      var hosts = await Roux.getDiscoveredHosts()
-      this.setState({ discoveredHosts: hosts, displayIPPicker: true })
-    } catch (err) {
-      console.warn(err)
+  onScannerReady = async () => {
+    if (!this.state.renderLoadedMesh) {
+      try {
+        await Roux.startPreview();
+      } catch (e) {
+        console.warn(e);
+      }
     }
-  }
-
-  setupPreview = async () => {
-    const { selectedDeviceType } = this.state
-
-    switch (selectedDeviceType) {
-      case 0: // Mirror device
-        await this.initializeMirrorDevice()
-        break
-      case 1: // Scanner device
-        await this.initializeScanningDevice()
-        break
-      default:
-        break
-    }
-  }
-
-  handleHostDiscovered = async () => {
-    console.log('Host discovered')
-    var hosts = await Roux.getDiscoveredHosts()
-    this.setState({ discoveredHosts: hosts })
-  }
-
-  handleDeviceTypeToggled = async (e) => {
-    let deviceType = e.nativeEvent.selectedSegmentIndex
-    this.setState({ selectedDeviceType: deviceType })
-    await Roux.uninitializeScanner()
-    this.setupPreview()
-  }
+  };
 
   startScan = async () => {
     try {
-      status = await Roux.startScan()
-      console.log(`startScan: ${status}`)
+      await Roux.startScan();
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   stopScan = async () => {
     try {
-      status = await Roux.stopScan()
-      console.log(`stopScan: ${status}`)
+      await Roux.stopScan();
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   onPreviewStart = () => {
-    console.log('Preview Started')
-  }
+    console.log('Preview Started');
+  };
 
   onScannerStart = () => {
-    console.log('Scanner Started')
-  }
+    console.log('Scanner Started');
+  };
 
   onScannerStop = async () => {
     try {
-      await Roux.generateMesh()
+      await Roux.generateMesh();
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   onGenerateMesh = () => {
     // call back that generate mesh finished
-    console.log('MESH GENERATED')
-    Alert.alert(
-      'Scanning Complete',
-      `Mesh has been generated on scanning device.`,
-      [{ text: 'Take new scan', onPress: this.setupPreview }]
-    )
-  }
+    console.log('MESH GENERATED');
+  };
 
   onSaveMesh = async () => {
-    // call back that generate mesh finished
-    console.log('MESH SAVED')
-    this.setupPreview()
-  }
+    this.getSavedMeshes();
+    if (!this.state.renderLoadedMesh) {
+      this.restartScanner();
+    }
+  };
+
+  restartScanner = async () => {
+    if (this.state.renderLoadedMesh) {
+      //Need to reinitialize scanner if we have a loaded mesh in our RouxView
+      this.setState({ renderLoadedMesh: false, selectedMeshPath: '' });
+      await Roux.uninitializeScanner();
+      await Roux.initializeScanner('true_depth');
+      this._drawer.close();
+    }
+    await Roux.startPreview();
+  };
 
   saveScan = async () => {
     try {
-      const dirPath = `${RNFS.DocumentDirectoryPath}/${Date.now()}`
-      await RNFS.mkdir(dirPath)
-      const filePath = `${dirPath}/scan.ply`
-      status = await Roux.saveScan(filePath)
-      Alert.alert('Saved scan', `Saved to: ${filePath}`)
+      const filePath = `${SCAN_DIR}/${Date.now()}.ply`;
+      await Roux.saveScan(filePath);
+      Alert.alert('Saved scan', `Saved to: ${filePath}`);
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   toggleV2Scanning = async () => {
     try {
-      const v2ScanningMode = await Roux.getV2ScanningEnabled()
-      await Roux.toggleV2Scanning(!v2ScanningMode)
-      this.setState({ v2ScanningMode: !v2ScanningMode })
-      this.setSize(this.state.scanSize)
+      const v2ScanningMode = await Roux.getV2ScanningEnabled();
+      await Roux.toggleV2Scanning(!v2ScanningMode);
+      this.setState({ v2ScanningMode: !v2ScanningMode });
+      this.setSize(this.state.scanSize);
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
   setSize = async (val: number) => {
     try {
-      const size = this.state.v2ScanningMode ? val * 1e-3 : val
-      this.setState({ scanSize: Math.floor(val * 10) / 10 })
-      await Roux.setSize(size)
+      const size = this.state.v2ScanningMode ? val * 1e-3 : val;
+      // Round the number to the tenth precision
+      this.setState({ scanSize: Math.floor(val * 10) / 10 });
+      await Roux.setSize(size);
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-  }
+  };
 
-  handleIPAddressPickerChange = (IPAddress) => {
-    this.setState({ connectedIPAddress: IPAddress })
-  }
+  onLoadMesh = (e) => {
+    console.log('Mesh loaded: ', e);
+    this._drawer.close();
+  };
 
-  connectToHost = async () => {
+  loadMesh = async (item) => {
+    console.log(item);
+    this.setState({ renderLoadedMesh: true });
+    //Reinitialize scanner for loaded mesh
+    await Roux.uninitializeScanner();
+    await Roux.initializeScanner('true_depth');
+    await Roux.loadMesh({ meshPath: item.path });
+    this.setState({ selectedMeshPath: item.path });
+  };
+
+  getSavedMeshes = () => {
+    RNFS.readDir(SCAN_DIR).then((readDirItems) => {
+      const savedMeshes = readDirItems.map((item) => {
+        const { path, name } = item;
+        return { path, name };
+      });
+      this.setState({ savedMeshes });
+    });
+  };
+
+  saveCleanedMesh = async () => {
     try {
-      await Roux.clearCommandHosts()
-      await Roux.connectToCommandHost(this.state.connectedIPAddress)
-      await Roux.setServerHost(this.state.connectedIPAddress)
-      await Roux.startPreview()
-      this.setState({ connectedToHost: true, displayIPPicker: false })
+      await Roux.applyEditsFromMeshViewport(true);
+      await Roux.saveScan(this.state.selectedMeshPath);
     } catch (e) {
-      console.log(e)
+      console.warn(e);
     }
-  }
+    console.log(status);
+    this._drawer.open();
+  };
 
   async componentDidMount() {
     //Get default scanning mode and set state
-    const v2ScanningMode = await Roux.getV2ScanningEnabled()
-    this.setState({ v2ScanningMode })
+    await RNFS.mkdir(SCAN_DIR);
+    this.getSavedMeshes();
+    const v2ScanningMode = await Roux.getV2ScanningEnabled();
+    this.setState({ v2ScanningMode });
   }
 
   render() {
-    const { scanState, discoveredHosts } = this.state
-    const deviceType =
-      this.state.selectedDeviceType === 0 ? 'MIRROR' : 'SCANNER'
+    const { scanState, savedMeshes, renderLoadedMesh } = this.state;
     return (
       <View style={styles.container}>
-        <RouxView
-          style={styles.roux}
-          onScanStateChanged={this.handleScanStateChanged}
-          onVisualizerReady={this.setupPreview}
-          onHostDiscovered={this.handleHostDiscovered}
-          onPreviewStart={this.onPreviewStart}
-          onScannerStart={this.onScannerStart}
-          onScannerStop={this.onScannerStop}
-          onGenerateMesh={this.onGenerateMesh}
-          onSaveMesh={this.onSaveMesh}
-        />
-        <SegmentedControl
-          style={styles.deviceToggle}
-          values={['Mirror Device', 'Scanning Device']}
-          selectedIndex={this.state.selectedDeviceType}
-          onChange={(e) => this.handleDeviceTypeToggled(e)}
-          backgroundColor={'#000'}
-        />
-
-        {/* MIRROR DEVICE SET UP */}
-        {deviceType === 'MIRROR' && (
-          <>
-            <Text style={styles.ipAddressLabel}>
-              IP Address: {this.state.deviceIPAddress}
-            </Text>
-            {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') && (
+        <Drawer
+          ref={(ref) => (this._drawer = ref)}
+          content={
+            <SafeAreaView style={{ paddingBottom: 30, flex: 1 }}>
+              <Text style={{ alignSelf: 'center', marginTop: 10 }}>Meshes</Text>
+              <FlatList
+                data={savedMeshes}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                    onPress={() => this.loadMesh(item)}
+                    style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+                  >
+                    <Text>{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.name}
+              />
+              <Button
+                title="Back to scanner"
+                onPress={this.restartScanner}
+              ></Button>
+            </SafeAreaView>
+          }
+        >
+          <RouxView
+            style={styles.roux}
+            onScanStateChanged={this.handleScanStateChanged}
+            onVisualizerReady={this.initializeScanner}
+            onScannerReady={this.onScannerReady}
+            onPreviewStart={this.onPreviewStart}
+            onScannerStart={this.onScannerStart}
+            onScannerStop={this.onScannerStop}
+            onGenerateMesh={this.onGenerateMesh}
+            onSaveMesh={this.onSaveMesh}
+            onLoadMesh={this.onLoadMesh}
+          />
+          {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') &&
+            !renderLoadedMesh && (
               <>
                 <TouchableOpacity
                   onPress={this.startScan}
                   style={styles.button}
                 >
-                  <Text style={styles.buttonText}>START</Text>
+                  <Text style={styles.buttonText}>Start Scanning</Text>
                 </TouchableOpacity>
                 <View style={styles.sliderContainer}>
                   <Slider
@@ -266,101 +252,117 @@ export default class App extends React.Component {
                   />
                   <Text style={styles.previewLabel}>v2 scanning</Text>
                 </View>
-              </>
-            )}
-            {scanState === 'SCANNING' && (
-              <TouchableOpacity onPress={this.stopScan} style={styles.button}>
-                <Text style={styles.buttonText}>STOP</Text>
-              </TouchableOpacity>
-            )}
-            {scanState === 'VIEWING' && (
-              <>
-                {/* Nothing to see here! All mesh commands are rendered on the Scanning Device. */}
-              </>
-            )}
-          </>
-        )}
-        {/* SCANNER DEVICE SET UP */}
-        {deviceType === 'SCANNER' && (
-          <>
-            <Text style={styles.ipAddressLabel}>
-              Connected to:{' '}
-              {this.state.connectedToHost ? this.state.connectedIPAddress : ''}
-            </Text>
-            {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') && (
-              <>
-                {this.state.displayIPPicker ? (
-                  <>
-                    <View style={styles.IPAddressPickerContainer}>
-                      <Picker
-                        style={styles.IPAddressPicker}
-                        selectedValue={this.state.connectedIPAddress || ''}
-                        onValueChange={(IPAddress) =>
-                          this.handleIPAddressPickerChange(IPAddress)
-                        }
-                      >
-                        <Picker.Item
-                          label={'Pick a Mirror Device'}
-                          value={''}
-                        />
-                        {discoveredHosts &&
-                          discoveredHosts.map((host) => {
-                            return <Picker.Item label={host} value={host} />
-                          })}
-                      </Picker>
-                    </View>
-                    <TouchableOpacity
-                      style={
-                        this.state.connectedIPAddress
-                          ? { ...styles.button, backgroundColor: '#3053FF' }
-                          : {
-                              ...styles.button,
-                              backgroundColor: '#D3D3D3',
-                              opacity: 0.5,
-                            }
-                      }
-                      disabled={!this.state.connectedIPAddress}
-                      onPress={this.connectToHost}
-                    >
-                      <Text style={styles.buttonText}>CONNECT</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <TouchableOpacity
-                      style={{
-                        ...styles.button,
-                        backgroundColor: '#586168',
-                        width: 300,
-                      }}
-                      onPress={() => {
-                        this.setState({ displayIPPicker: true })
-                      }}
-                    >
-                      <Text style={styles.buttonText}>
-                        Change Mirror Device
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </>
-            )}
-            {scanState === 'SCANNING' && (
-              <>
-                {/* Nothing to see here! All scan commands are rendered on the Mirror Device. */}
-              </>
-            )}
-            {scanState === 'VIEWING' && (
-              <>
-                <TouchableOpacity onPress={this.saveScan} style={styles.button}>
-                  <Text style={styles.buttonText}>Save Mesh</Text>
+                <TouchableOpacity
+                  style={{
+                    ...styles.button,
+                    backgroundColor: '#586168',
+                    bottom: 40,
+                    height: 50,
+                  }}
+                  onPress={() => {
+                    this._drawer.open();
+                  }}
+                >
+                  <Text style={styles.buttonText}>View meshes</Text>
                 </TouchableOpacity>
               </>
             )}
-          </>
-        )}
+          {scanState === 'SCANNING' && (
+            <TouchableOpacity onPress={this.stopScan} style={styles.button}>
+              <Text style={styles.buttonText}>STOP</Text>
+            </TouchableOpacity>
+          )}
+          {scanState === 'VIEWING' && (
+            <>
+              <TouchableOpacity
+                onPress={this.saveScan}
+                style={{ ...styles.button, bottom: 150 }}
+              >
+                <Text style={styles.buttonText}>SAVE</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.restartScanner}
+                style={styles.newScanButton}
+              >
+                <Text style={styles.buttonText}>NEW SCAN</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {renderLoadedMesh && (
+            <>
+              <TouchableOpacity
+                style={{
+                  ...styles.button,
+                  backgroundColor: '#586168',
+                  left: 20,
+                  bottom: 40,
+                  height: 50,
+                }}
+                onPress={() => {
+                  this._drawer.open();
+                }}
+              >
+                <Text style={styles.buttonText}>Go back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  ...styles.button,
+                  right: 0,
+                  bottom: 40,
+                  height: 50,
+                }}
+                onPress={this.saveCleanedMesh}
+              >
+                <Text style={styles.buttonText}>Save changes</Text>
+              </TouchableOpacity>
+              <View style={styles.actions}>
+                {/* TODO: play around with the values passed to the editing functions to see their results - or, get fancy and implement a slider! */}
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.decimateMesh(0.9);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Decimate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.smoothMesh(10);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Smooth</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.fillHoles(1);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Fill Holes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.extractLargestSurface(0.1);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Auto clean</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.makeWaterTight(13);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Make water tight</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </Drawer>
       </View>
-    )
+    );
   }
 }
 
@@ -368,31 +370,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  roux: { flex: 1, backgroundColor: 'blue' },
-  ipAddressLabel: {
-    position: 'absolute',
-    top: 50,
-    backgroundColor: '#3053FF',
-    color: '#fff',
-    padding: 5,
-    fontSize: 18,
-    width: '100%',
-  },
-  deviceToggle: {
-    position: 'absolute',
-    alignSelf: 'center',
-    height: 50,
-    width: 300,
-    top: 90,
-  },
   button: {
     position: 'absolute',
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 150,
-    width: 150,
+    bottom: 200,
+    paddingHorizontal: 10,
     height: 70,
+    minWidth: 150,
     backgroundColor: '#f2494a',
   },
   newScanButton: {
@@ -409,9 +395,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
   },
+  actions: {
+    position: 'absolute',
+    bottom: 100,
+    backgroundColor: 'transparent',
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+  },
+  actionButton: {
+    backgroundColor: 'transparent',
+    padding: 10,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
   sliderContainer: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 120,
     width: '80%',
     alignSelf: 'center',
   },
@@ -423,14 +425,8 @@ const styles = StyleSheet.create({
   v2SwitchContainer: {
     position: 'absolute',
     alignItems: 'center',
-    top: 150,
+    top: 100,
     right: 10,
   },
-  IPAddressPickerContainer: {
-    position: 'absolute',
-    bottom: 270,
-    width: '80%',
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-  },
-})
+  roux: { flex: 1, backgroundColor: 'blue' },
+});
