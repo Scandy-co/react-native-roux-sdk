@@ -58,7 +58,6 @@ RCT_EXPORT_VIEW_PROPERTY(onHostDiscovered, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVisualizerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVolumeMemoryDidUpdate, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTrackingDidUpdate, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onVidSavedToCamRoll, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(scanMode, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 
@@ -202,14 +201,6 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-- (void)onVidSavedToCamRoll:(bool)success
-{
-  if (self.scanView.onVidSavedToCamRoll) {
-    self.scanView.onVidSavedToCamRoll(
-      @{ @"success" : [NSNumber numberWithBool:success] });
-  }
-}
-
 - (void)onTrackingDidUpdate:(float)confidence withTracking:(bool)is_tracking
 {
   self.isTracking = is_tracking;
@@ -219,7 +210,6 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-//Doesn't seem to be working
 - (void)onLoadMesh:(scandy::core::Status)status
 {
   //  NSLog(@"onSaveMesh");
