@@ -258,7 +258,12 @@ type RouxType = {
   getConnectedClients(): Promise<any>;
   connectToCommandHost(ip_address: string): Promise<any>;
   clearCommandHosts(): Promise<any>;
-  hasNetworkConnection(): Promise<any>;
+  decimateMesh(percent: number): Promise<any>;
+  smoothMesh(iterations: number): Promise<any>;
+  fillHoles(hole_size: number): Promise<any>;
+  extractLargestSurface(): Promise<any>;
+  makeWaterTight(depth: number): Promise<any>;
+  applyEditsFromMeshViewport(apply_changes: boolean): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;

@@ -51,6 +51,14 @@ const result = await Roux.generateMesh();
 const result = await Roux.saveScan(destination);
 const result = await Roux.loadMesh({ meshPath, texturePath });
 
+// Editing mesh
+const result = await Roux.decimateMesh(percent);
+const result = await Roux.smoothMesh(iterations);
+const result = await Roux.fillHoles(hole_size);
+const result = await Roux.extractLargestSurface();
+const result = await Roux.makeWaterTight(depth);
+const result = await Roux.applyEditsFromMeshViewport(apply_changes);
+
 //Networking
 const ip_address = await Roux.getIPAddress();
 
@@ -165,6 +173,53 @@ Loads mesh data and renders in RouxView.
     absolute path to the mesh file to be loaded
   - **texturePath** (optional): string
     absolute path to the texture file to be loaded and mapped on the mesh
+
+#### `decimateMesh(percent: float): Promise<RouxStatusString>`
+
+Reduces the number of points and triangles in the mesh.
+**Parameters**
+
+- **percent**: float
+  percent reduction in number of points, 0.0 - 1.0
+
+#### `smoothMesh(iterations: int): Promise<RouxStatusString>`
+
+Smooths the surface of the mesh
+**Parameters**
+
+- **iterations**: int
+  The number of smoothing iterations to make. 3-10 is a reasonable range
+
+#### `fillHoles(hole_size: float): Promise<RouxStatusString>`
+
+Attempts to automatically fill holes in the mesh.
+
+**Parameters**
+
+- **hole_size**: float
+  Largest area of mesh to fill
+
+#### `extractLargestSurface(): Promise<RouxStatusString>`
+
+Removes all the non connected surfaces floating in the mesh.
+
+#### `makeWaterTight(depth: int): Promise<RouxStatusString>`
+
+Attempts to automatically make the mesh water tight
+
+**Parameters**
+
+- **depth**: int
+  How deeply to follow the original model. 5 is loose, 8 is default, 13 is high
+
+#### `applyEditsFromMeshViewport(apply_changes: bool): Promise<RouxStatusString>`
+
+Apply the edits being viewed in the Viewport into the mesh, so that when you save they take
+
+**Parameters**
+
+- **apply_changes**: bool
+  Apply the edits (true) or (false) undo the edits
 
 ### Networking Methods
 

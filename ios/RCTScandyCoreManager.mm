@@ -751,6 +751,90 @@ RCT_EXPORT_METHOD(clearCommandHosts
     });
 }
 
+RCT_EXPORT_METHOD(decimateMesh
+                  : (double)percent resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    auto status = [ScandyCore decimateMesh:percent];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(smoothMesh
+                  : (int)iterations resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    auto status = [ScandyCore smoothMesh:iterations];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(fillHoles
+                  : (double)hole_size resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    auto status = [ScandyCore fillHoles:hole_size];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(extractLargestSurface
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    auto status = [ScandyCore extractLargestSurface];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(makeWaterTight
+                  : (int)depth resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    auto status = [ScandyCore makeWaterTight:depth];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(applyEditsFromMeshViewport
+                  : (NSNumber* _Nonnull)_apply_changes resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    bool apply_changes = _apply_changes.boolValue;
+    auto status = [ScandyCore applyEditsFromMeshViewport:apply_changes];
+    auto statusString = [self formatStatusError:status];
+    if (status == scandy::core::Status::SUCCESS) {
+      return resolve(statusString);
+    } else {
+      return reject(statusString, statusString, nil);
+    }
+}
+
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
