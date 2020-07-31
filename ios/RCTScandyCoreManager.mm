@@ -139,8 +139,6 @@ RCT_EXPORT_METHOD(initializeScanner
             return reject(@"-1", @"Invalid scanner type", nil);
         }
         
-        auto slam_config =
-        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
         auto licenseStatus = [ScandyCore setLicense];
         if (licenseStatus == scandy::core::Status::SUCCESS){
             [self initializeScanner:scannerType];
