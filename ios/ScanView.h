@@ -30,6 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTBubblingEventBlock onVidSavedToCamRoll;
 @property BOOL scanMode;
 
+- (void)setRendererBackgroundColor;
+- (void)setRendererBackgroundColor:(double*)
+                            color1:(double*)color2
+                                  :(bool)enableGradient;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

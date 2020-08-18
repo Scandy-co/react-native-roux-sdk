@@ -231,6 +231,7 @@ type RouxType = {
   loadMesh(dict: object): Promise<any>;
   toggleV2Scanning(enabled: boolean): Promise<any>;
   getV2ScanningEnabled(): Promise<any>;
+  setRendererBackgroundColor(color1: object, color2: object): void;
 };
 
 // const { RouxSdk } = NativeModules;
