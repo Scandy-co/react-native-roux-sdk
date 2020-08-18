@@ -413,6 +413,24 @@ RCT_EXPORT_METHOD(setSize
   }
 }
 
+RCT_EXPORT_METHOD(setRendererBackgroundColor
+                  : (NSDictionary*)rgba1
+                  : (NSDictionary*)rgba2
+                  : (nonnull NSNumber*)gradient resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  double color1[3];
+  color1[0] = (double)([[rgba1 objectForKey:@"r"] intValue]) / 255.0;
+  color1[1] = (double)([[rgba1 objectForKey:@"g"] intValue]) / 255.0;
+  color1[2] = (double)([[rgba1 objectForKey:@"b"] intValue]) / 255.0;
+  double color2[3];
+  color2[0] = (double)([[rgba2 objectForKey:@"r"] intValue]) / 255.0;
+  color2[1] = (double)([[rgba2 objectForKey:@"g"] intValue]) / 255.0;
+  color2[2] = (double)([[rgba2 objectForKey:@"b"] intValue]) / 255.0;
+  [self.scanView setRendererBackgroundColor:color1:color2:gradient];
+}
+
 RCT_EXPORT_METHOD(loadMesh
                   : (NSDictionary*)details resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
