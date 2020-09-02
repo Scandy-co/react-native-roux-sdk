@@ -156,14 +156,11 @@ RCT_EXPORT_METHOD(initializeVolumetricCapture
                   : (RCTPromiseRejectBlock)reject)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        auto scandyCoreConfig =
-        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
         [ScandyCoreManager clearCommandHosts];
         
         
         ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-        //        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
-        scandyCoreConfig->m_enable_volumetric_video_recording = true;
+        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
         [self initializeScanner:ScandyCoreManager.scandyCorePtr->getScannerType()];
         bool inited = ScandyCoreManager.scandyCorePtr->getScanState() ==
         scandy::core::ScanState::INITIALIZED;
@@ -197,8 +194,6 @@ RCT_EXPORT_METHOD(reinitializeScanner
 {
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        auto slam_config =
-        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration();
         auto scanner_type = ScandyCoreManager.scandyCorePtr->getScannerType();
         ScandyCoreManager.scandyCorePtr->stopPipeline();
         ScandyCoreManager.scandyCorePtr->uninitializeScanner();
@@ -215,11 +210,8 @@ RCT_EXPORT_METHOD(reinitializeScanner
         [ScandyCoreManager setReceiveNetworkCommands:false];
         [ScandyCoreManager setSendRenderedStream:false];
         ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-        //        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
-        //        ScandyCoreManager.scandyCorePtr->enablePreviewMode(true);
-        slam_config->m_preview_mode = true;
-        slam_config->m_enable_volumetric_video_recording = true;
-        
+        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
+
         // If you receive the rendered stream, then you should send commands via
         // network
         if ([[props objectForKey:@"networkReceiver"] intValue] == 1) {
@@ -240,13 +232,11 @@ RCT_EXPORT_METHOD(reinitializeScanner
             if (host && host.length > 5) {
                 [ScandyCoreManager setServerHost:host];
                 ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(true);
-                //                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(false);
-                slam_config->m_enable_volumetric_video_recording = false;
+                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(false);
             } else {
                 [ScandyCoreManager setServerHost:@"127.0.0.1"];
                 ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-                //                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
-                slam_config->m_enable_volumetric_video_recording = true;
+                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
             }
         }
         
