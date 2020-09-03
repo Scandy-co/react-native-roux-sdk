@@ -261,7 +261,7 @@ type RouxType = {
   decimateMesh(percent: number): Promise<any>;
   smoothMesh(iterations: number): Promise<any>;
   fillHoles(hole_size: number): Promise<any>;
-  extractLargestSurface(): Promise<any>;
+  extractLargestSurface(min_percent: number): Promise<any>;
   makeWaterTight(depth: number): Promise<any>;
   applyEditsFromMeshViewport(apply_changes: boolean): Promise<any>;
 };

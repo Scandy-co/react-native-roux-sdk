@@ -55,7 +55,7 @@ const result = await Roux.loadMesh({ meshPath, texturePath });
 const result = await Roux.decimateMesh(percent);
 const result = await Roux.smoothMesh(iterations);
 const result = await Roux.fillHoles(hole_size);
-const result = await Roux.extractLargestSurface();
+const result = await Roux.extractLargestSurface(min_percent);
 const result = await Roux.makeWaterTight(depth);
 const result = await Roux.applyEditsFromMeshViewport(apply_changes);
 
@@ -199,9 +199,14 @@ Attempts to automatically fill holes in the mesh.
 - **hole_size**: float
   Largest area of mesh to fill
 
-#### `extractLargestSurface(): Promise<RouxStatusString>`
+#### `extractLargestSurface(min_percent: double): Promise<RouxStatusString>`
 
-Removes all the non connected surfaces floating in the mesh.
+Removes all the non connected surfaces floating in the mesh that smaller than min_percent of the full mesh's size.
+
+**Parameters**
+
+- **min_percent**: float
+  The minimum percentage of mesh size to preserve individual pieces. 0.1 (10%) is good for removing small noisy parts while keeping some possibly larger disconnected pieces.
 
 #### `makeWaterTight(depth: int): Promise<RouxStatusString>`
 
