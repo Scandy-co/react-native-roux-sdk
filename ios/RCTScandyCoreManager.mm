@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(initializeVolumetricCapture
         
         
         ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
+        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->setEnableVolumetricVideoRecording(true);
         [self initializeScanner:ScandyCoreManager.scandyCorePtr->getScannerType()];
         bool inited = ScandyCoreManager.scandyCorePtr->getScanState() ==
         scandy::core::ScanState::INITIALIZED;
@@ -210,7 +210,7 @@ RCT_EXPORT_METHOD(reinitializeScanner
         [ScandyCoreManager setReceiveNetworkCommands:false];
         [ScandyCoreManager setSendRenderedStream:false];
         ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-        ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
+        ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->setEnableVolumetricVideoRecording(true);
 
         // If you receive the rendered stream, then you should send commands via
         // network
@@ -232,11 +232,11 @@ RCT_EXPORT_METHOD(reinitializeScanner
             if (host && host.length > 5) {
                 [ScandyCoreManager setServerHost:host];
                 ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(true);
-                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(false);
+                ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->setEnableVolumetricVideoRecording(false);
             } else {
                 [ScandyCoreManager setServerHost:@"127.0.0.1"];
                 ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoStreaming(false);
-                ScandyCoreManager.scandyCorePtr->setEnableVolumetricVideoRecording(true);
+                ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->setEnableVolumetricVideoRecording(true);
             }
         }
         
