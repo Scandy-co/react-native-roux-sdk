@@ -778,10 +778,11 @@ RCT_EXPORT_METHOD(fillHoles
 }
 
 RCT_EXPORT_METHOD(extractLargestSurface
+                  : (double)min_percent resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
-    auto status = [ScandyCore extractLargestSurface];
+    auto status = [ScandyCore extractLargestSurface:min_percent];
     auto statusString = [self formatStatusError:status];
     if (status == scandy::core::Status::SUCCESS) {
         return resolve(statusString);
