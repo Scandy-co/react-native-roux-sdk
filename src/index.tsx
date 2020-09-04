@@ -36,6 +36,10 @@ type Props = {
    */
   onScannerStart?: Function;
   /**
+   * Core is initialized
+   */
+  onScannerReady?: Function;
+  /**
    * Core finished live meshing
    */
   onScannerStop?: Function;
@@ -48,7 +52,7 @@ type Props = {
    */
   onSaveMesh?: Function;
   onExportVolumetricVideo?: Function;
-  onMeshLoaded: Function;
+  onLoadMesh?: Function;
   onScanStateChanged?: Function;
   onClientConnected?: Function;
   onHostDiscovered?: Function;
@@ -67,10 +71,11 @@ class RouxView extends React.Component<Props> {
     onVisualizerReady: () => console.log('ScandyCore: Visualizer Readied'),
     onPreviewStart: () => console.log('ScandyCore: Preview Started'),
     onScannerStart: () => console.log('ScandyCore: Scanner Started'),
+    onScannerReady: () => console.log('ScandyCore: Scanner Ready'),
     onScannerStop: () => console.log('ScandyCore: Scanner Stopped'),
     onGenerateMesh: () => console.log('ScandyCore: Generated Mesh'),
     onSaveMesh: () => console.log('ScandyCore: Saved Mesh'),
-    onMeshLoaded: () => console.log('Scandy Core: Mesh Loaded'),
+    onLoadMesh: () => console.log('Scandy Core: Mesh Loaded'),
     onScanStateChanged: (state: string) =>
       console.log('Scandy Core: State Changed ', state),
     onClientConnected: () => console.log('ScandyCore: Client Connected'),
@@ -115,6 +120,13 @@ class RouxView extends React.Component<Props> {
     this._updateCoreState();
   };
 
+  _onScannerReady = ({ nativeEvent }: { nativeEvent: object }) => {
+    if (this.props.onScannerReady) {
+      this.props.onScannerReady(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
   _onScannerStop = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onScannerStop) {
       this.props.onScannerStop(nativeEvent);
@@ -132,6 +144,13 @@ class RouxView extends React.Component<Props> {
   _onSaveMesh = ({ nativeEvent }: { nativeEvent: object }) => {
     if (this.props.onSaveMesh) {
       this.props.onSaveMesh(nativeEvent);
+    }
+    this._updateCoreState();
+  };
+
+  _onLoadMesh = ({ nativeEvent }: { nativeEvent: object }) => {
+    if (this.props.onLoadMesh) {
+      this.props.onLoadMesh(nativeEvent);
     }
     this._updateCoreState();
   };
@@ -175,14 +194,6 @@ class RouxView extends React.Component<Props> {
     }
   };
 
-  _startPreview = () => {
-    ScandyCoreManager.startPreview().then(() => {
-      if (this.props.onPreviewStart) {
-        this.props.onPreviewStart();
-      }
-    });
-  };
-
   render() {
     const { style } = this.props;
     return (
@@ -200,9 +211,11 @@ class RouxView extends React.Component<Props> {
           onVisualizerReady={this._onVisualizerReady}
           onPreviewStart={this._onPreviewStart}
           onScannerStart={this._onScannerStart}
+          onScannerReady={this._onScannerReady}
           onScannerStop={this._onScannerStop}
           onGenerateMesh={this._onGenerateMesh}
           onSaveMesh={this._onSaveMesh}
+          onLoadMesh={this._onLoadMesh}
           onExportVolumetricVideo={this._onExportVolumetricVideo}
           onClientConnected={this._onClientConnected}
           onHostDiscovered={this._onHostDiscovered}
@@ -220,7 +233,7 @@ class RouxView extends React.Component<Props> {
 // Promise<any> could probable be Promise<void> instead
 //  but I hit a speedbump...
 type RouxType = {
-  initializeScanner(): Promise<any>;
+  initializeScanner(scanner_type: string): Promise<any>;
   uninitializeScanner(): Promise<any>;
   startPreview(): Promise<any>;
   startScan(): Promise<any>;
@@ -231,6 +244,26 @@ type RouxType = {
   loadMesh(dict: object): Promise<any>;
   toggleV2Scanning(enabled: boolean): Promise<any>;
   getV2ScanningEnabled(): Promise<any>;
+  getIPAddress(): Promise<any>;
+  setSendRenderedStream(enabled: boolean): Promise<any>;
+  getSendRenderedStream(enabled: boolean): Promise<any>;
+  setSendNetworkCommands(enabled: boolean): Promise<any>;
+  getSendNetworkCommands(): Promise<any>;
+  setReceiveRenderedStream(enabled: boolean): Promise<any>;
+  getReceiveRenderedStream(): Promise<any>;
+  setReceiveNetworkCommands(enabled: boolean): Promise<any>;
+  getReceiveNetworkCommands(): Promise<any>;
+  setServerHost(ip_address: string): Promise<any>;
+  getDiscoveredHosts(): Promise<any>;
+  getConnectedClients(): Promise<any>;
+  connectToCommandHost(ip_address: string): Promise<any>;
+  clearCommandHosts(): Promise<any>;
+  decimateMesh(percent: number): Promise<any>;
+  smoothMesh(iterations: number): Promise<any>;
+  fillHoles(hole_size: number): Promise<any>;
+  extractLargestSurface(min_percent: number): Promise<any>;
+  makeWaterTight(depth: number): Promise<any>;
+  applyEditsFromMeshViewport(apply_changes: boolean): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;

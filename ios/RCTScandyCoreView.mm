@@ -47,16 +47,17 @@ RCTScandyCoreView ()<ScandyCoreDelegate>
 RCT_EXPORT_MODULE();
 RCT_EXPORT_VIEW_PROPERTY(onPreviewStart, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onScannerStart, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onScannerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onScannerStop, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGenerateMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSaveMesh, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onLoadMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onExportVolumetricVideo, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onClientConnected, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onHostDiscovered, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVisualizerReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVolumeMemoryDidUpdate, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTrackingDidUpdate, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onVidSavedToCamRoll, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(scanMode, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 
@@ -118,6 +119,20 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
     });
   }
 }
+
+- (void)onScannerReady:(scandy::core::Status)status
+{
+   NSLog(@"onScannerReady");
+
+  if (self.scanView.onScannerReady) {
+    self.scanView.onScannerReady(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
+
 - (void)onScannerStop:(scandy::core::Status)status
 {
   //  NSLog(@"onScannerStop");
@@ -165,12 +180,45 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
+//This doesn't seem to be working right now - never gets triggered
+- (void)onClientConnected:(NSString*)host
+{
+  //  NSLog(@"onClientConnected: %@", host);
+  if (self.scanView.onClientConnected) {
+    self.scanView.onClientConnected(@{ @"host" : host });
+  }
+}
+
+//Doesn't seem to work - always returns 0.00
+- (void)onVolumeMemoryDidUpdate:(const float)percent_full
+{
+  //  NSLog(@"onVolumeMemoryDidUpdate");
+  if (self.scanView.onVolumeMemoryDidUpdate) {
+    NSString* percent_string =
+      [NSString stringWithFormat:@"%.02f", percent_full];
+    self.scanView.onVolumeMemoryDidUpdate(
+      @{ @"percent_full" : percent_string });
+  }
+}
+
 - (void)onTrackingDidUpdate:(float)confidence withTracking:(bool)is_tracking
 {
   self.isTracking = is_tracking;
   self.trackingCost = confidence;
   if (is_tracking) {
   } else {
+  }
+}
+
+- (void)onLoadMesh:(scandy::core::Status)status
+{
+  //  NSLog(@"onSaveMesh");
+  if (self.scanView.onLoadMesh) {
+    self.scanView.onLoadMesh(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
   }
 }
 

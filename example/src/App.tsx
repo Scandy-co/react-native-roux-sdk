@@ -6,20 +6,27 @@ import {
   TouchableOpacity,
   Alert,
   Text,
+  Button,
+  FlatList,
+  SafeAreaView,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import Drawer from 'react-native-drawer';
 
 import Roux, { RouxView } from 'react-native-roux-sdk';
 import RNFS from 'react-native-fs';
 
+const SCAN_DIR = `${RNFS.DocumentDirectoryPath}/meshes`;
 export default class App extends React.Component {
-  state = {
-    scanState: '',
-    v2ScanningMode: null, //v2ScanningMode defaults to true
-    scanSize: 1.0, // scan size in mm or meters pending on scanning mode
-  };
   constructor(props: Readonly<{}>) {
     super(props);
+    this.state = {
+      scanState: '',
+      savedMeshes: [],
+      renderLoadedMesh: false,
+      v2ScanningMode: null, //v2ScanningMode defaults to true
+      scanSize: 1.0, // scan size in mm or meters pending on scanning mode
+    };
   }
 
   handleScanStateChanged = (scanState) => {
@@ -27,12 +34,21 @@ export default class App extends React.Component {
     this.setState({ scanState });
   };
 
-  setupPreview = async () => {
+  initializeScanner = async () => {
     try {
-      await Roux.initializeScanner();
-      await Roux.startPreview();
+      await Roux.initializeScanner('true_depth');
     } catch (err) {
       console.warn(err);
+    }
+  };
+
+  onScannerReady = async () => {
+    if (!this.state.renderLoadedMesh) {
+      try {
+        await Roux.startPreview();
+      } catch (e) {
+        console.warn(e);
+      }
     }
   };
 
@@ -74,23 +90,26 @@ export default class App extends React.Component {
   };
 
   onSaveMesh = async () => {
-    // call back that save mesh finished
-    console.log('MESH SAVED');
-    this.restartScanner();
+    this.getSavedMeshes();
+    if (!this.state.renderLoadedMesh) {
+      this.restartScanner();
+    }
   };
 
   restartScanner = async () => {
-    //NOTE: you do not need to call initializeScanner again;
-    // scanner will remain initialized until RouxView unmounts
+    if (this.state.renderLoadedMesh) {
+      //Need to reinitialize scanner if we have a loaded mesh in our RouxView
+      this.setState({ renderLoadedMesh: false, selectedMeshPath: '' });
+      await Roux.uninitializeScanner();
+      await Roux.initializeScanner('true_depth');
+      this._drawer.close();
+    }
     await Roux.startPreview();
   };
 
   saveScan = async () => {
     try {
-      const dirPath = `${RNFS.DocumentDirectoryPath}/${Date.now()}`;
-      await RNFS.mkdir(dirPath);
-      console.log('made dir', dirPath);
-      const filePath = `${dirPath}/scan.ply`;
+      const filePath = `${SCAN_DIR}/${Date.now()}.ply`;
       await Roux.saveScan(filePath);
       Alert.alert('Saved scan', `Saved to: ${filePath}`);
     } catch (err) {
@@ -112,78 +131,236 @@ export default class App extends React.Component {
   setSize = async (val: number) => {
     try {
       const size = this.state.v2ScanningMode ? val * 1e-3 : val;
-      await Roux.setSize(size);
       // Round the number to the tenth precision
       this.setState({ scanSize: Math.floor(val * 10) / 10 });
+      await Roux.setSize(size);
     } catch (err) {
       console.warn(err);
     }
   };
 
+  onLoadMesh = (e) => {
+    console.log('Mesh loaded: ', e);
+    this._drawer.close();
+  };
+
+  loadMesh = async (item) => {
+    console.log(item);
+    this.setState({ renderLoadedMesh: true });
+    //Reinitialize scanner for loaded mesh
+    await Roux.uninitializeScanner();
+    await Roux.initializeScanner('true_depth');
+    await Roux.loadMesh({ meshPath: item.path });
+    this.setState({ selectedMeshPath: item.path });
+  };
+
+  getSavedMeshes = () => {
+    RNFS.readDir(SCAN_DIR).then((readDirItems) => {
+      const savedMeshes = readDirItems.map((item) => {
+        const { path, name } = item;
+        return { path, name };
+      });
+      this.setState({ savedMeshes });
+    });
+  };
+
+  saveCleanedMesh = async () => {
+    try {
+      await Roux.applyEditsFromMeshViewport(true);
+      await Roux.saveScan(this.state.selectedMeshPath);
+    } catch (e) {
+      console.warn(e);
+    }
+    console.log(status);
+    this._drawer.open();
+  };
+
   async componentDidMount() {
     //Get default scanning mode and set state
+    await RNFS.mkdir(SCAN_DIR);
+    this.getSavedMeshes();
     const v2ScanningMode = await Roux.getV2ScanningEnabled();
     this.setState({ v2ScanningMode });
   }
 
   render() {
-    const { scanState } = this.state;
+    const { scanState, savedMeshes, renderLoadedMesh } = this.state;
     return (
       <View style={styles.container}>
-        <RouxView
-          style={styles.roux}
-          onScanStateChanged={this.handleScanStateChanged}
-          onVisualizerReady={this.setupPreview}
-          onPreviewStart={this.onPreviewStart}
-          onScannerStart={this.onScannerStart}
-          onScannerStop={this.onScannerStop}
-          onGenerateMesh={this.onGenerateMesh}
-          onSaveMesh={this.onSaveMesh}
-        />
-        {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') && (
-          <>
-            <TouchableOpacity onPress={this.startScan} style={styles.button}>
-              <Text style={styles.buttonText}>START</Text>
-            </TouchableOpacity>
-            <View style={styles.sliderContainer}>
-              <Slider
-                minimumValue={0.2}
-                maximumValue={4}
-                onValueChange={this.setSize}
-                style={styles.slider}
+        <Drawer
+          ref={(ref) => (this._drawer = ref)}
+          content={
+            <SafeAreaView style={{ paddingBottom: 30, flex: 1 }}>
+              <Text style={{ alignSelf: 'center', marginTop: 10 }}>Meshes</Text>
+              <FlatList
+                data={savedMeshes}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                    onPress={() => this.loadMesh(item)}
+                    style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+                  >
+                    <Text>{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.name}
               />
-              <Text style={styles.previewLabel}>
-                size: {this.state.scanSize}
-                {this.state.v2ScanningMode ? 'mm' : 'm'}
-              </Text>
-            </View>
-            <View style={styles.v2SwitchContainer}>
-              <Switch
-                onValueChange={this.toggleV2Scanning}
-                value={this.state.v2ScanningMode}
-              />
-              <Text style={styles.previewLabel}>v2 scanning</Text>
-            </View>
-          </>
-        )}
-        {scanState === 'SCANNING' && (
-          <TouchableOpacity onPress={this.stopScan} style={styles.button}>
-            <Text style={styles.buttonText}>STOP</Text>
-          </TouchableOpacity>
-        )}
-        {scanState === 'VIEWING' && (
-          <>
-            <TouchableOpacity onPress={this.saveScan} style={styles.button}>
-              <Text style={styles.buttonText}>SAVE</Text>
+              <Button
+                title="Back to scanner"
+                onPress={this.restartScanner}
+              ></Button>
+            </SafeAreaView>
+          }
+        >
+          <RouxView
+            style={styles.roux}
+            onScanStateChanged={this.handleScanStateChanged}
+            onVisualizerReady={this.initializeScanner}
+            onScannerReady={this.onScannerReady}
+            onPreviewStart={this.onPreviewStart}
+            onScannerStart={this.onScannerStart}
+            onScannerStop={this.onScannerStop}
+            onGenerateMesh={this.onGenerateMesh}
+            onSaveMesh={this.onSaveMesh}
+            onLoadMesh={this.onLoadMesh}
+          />
+          {(scanState === 'INITIALIZED' || scanState === 'PREVIEWING') &&
+            !renderLoadedMesh && (
+              <>
+                <TouchableOpacity
+                  onPress={this.startScan}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Start Scanning</Text>
+                </TouchableOpacity>
+                <View style={styles.sliderContainer}>
+                  <Slider
+                    minimumValue={0.2}
+                    maximumValue={4}
+                    onSlidingComplete={this.setSize}
+                    value={this.state.scanSize}
+                    style={styles.slider}
+                  />
+                  <Text style={styles.previewLabel}>
+                    size: {this.state.scanSize}
+                    {this.state.v2ScanningMode ? 'mm' : 'm'}
+                  </Text>
+                </View>
+                <View style={styles.v2SwitchContainer}>
+                  <Switch
+                    onValueChange={this.toggleV2Scanning}
+                    value={this.state.v2ScanningMode}
+                  />
+                  <Text style={styles.previewLabel}>v2 scanning</Text>
+                </View>
+                <TouchableOpacity
+                  style={{
+                    ...styles.button,
+                    backgroundColor: '#586168',
+                    bottom: 40,
+                    height: 50,
+                  }}
+                  onPress={() => {
+                    this._drawer.open();
+                  }}
+                >
+                  <Text style={styles.buttonText}>View meshes</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          {scanState === 'SCANNING' && (
+            <TouchableOpacity onPress={this.stopScan} style={styles.button}>
+              <Text style={styles.buttonText}>STOP</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.restartScanner}
-              style={styles.newScanButton}
-            >
-              <Text style={styles.buttonText}>NEW SCAN</Text>
-            </TouchableOpacity>
-          </>
-        )}
+          )}
+          {scanState === 'VIEWING' && (
+            <>
+              <TouchableOpacity
+                onPress={this.saveScan}
+                style={{ ...styles.button, bottom: 150 }}
+              >
+                <Text style={styles.buttonText}>SAVE</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.restartScanner}
+                style={styles.newScanButton}
+              >
+                <Text style={styles.buttonText}>NEW SCAN</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {renderLoadedMesh && (
+            <>
+              <TouchableOpacity
+                style={{
+                  ...styles.button,
+                  backgroundColor: '#586168',
+                  left: 20,
+                  bottom: 40,
+                  height: 50,
+                }}
+                onPress={() => {
+                  this._drawer.open();
+                }}
+              >
+                <Text style={styles.buttonText}>Go back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  ...styles.button,
+                  right: 0,
+                  bottom: 40,
+                  height: 50,
+                }}
+                onPress={this.saveCleanedMesh}
+              >
+                <Text style={styles.buttonText}>Save changes</Text>
+              </TouchableOpacity>
+              <View style={styles.actions}>
+                {/* TODO: play around with the values passed to the editing functions to see their results - or, get fancy and implement a slider! */}
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.decimateMesh(0.9);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Decimate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.smoothMesh(10);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Smooth</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.fillHoles(1);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Fill Holes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.extractLargestSurface(0.1);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Auto clean</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={async () => {
+                    await Roux.makeWaterTight(13);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Make water tight</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </Drawer>
       </View>
     );
   }
@@ -198,9 +375,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 150,
-    width: 150,
+    bottom: 200,
+    paddingHorizontal: 10,
     height: 70,
+    minWidth: 150,
     backgroundColor: '#f2494a',
   },
   newScanButton: {
@@ -217,10 +395,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
   },
-  // actions: { backgroundColor: "transparent" },
+  actions: {
+    position: 'absolute',
+    bottom: 100,
+    backgroundColor: 'transparent',
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+  },
+  actionButton: {
+    backgroundColor: 'transparent',
+    padding: 10,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
   sliderContainer: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 120,
     width: '80%',
     alignSelf: 'center',
   },
