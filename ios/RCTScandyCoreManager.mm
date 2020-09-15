@@ -423,6 +423,42 @@ RCT_EXPORT_METHOD(toggleV2Scanning
   });
 }
 
+RCT_EXPORT_METHOD(setScanMode
+                  : (NSString*)scanMode resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  scandy::core::Status status = scandy::core::Status::UNKNOWN;
+  scandy::core::ScanMode scan_mode = scandy::core::ScanMode::UNKNOWN;
+  for (int s = 0; s < (int)scandy::core::ScanMode::LAST; s++) {
+    // iterate through all the scan modes, cast from int to
+    // scandy::core::ScanMode enum
+    scan_mode = (scandy::core::ScanMode)s;
+    NSString* test_mode = [NSString
+      stringWithUTF8String:scandy::core::getScanModeString(scan_mode)];
+    // check if this scan mode is the one we were given
+    if ([scanMode isEqual:test_mode]) {
+      // great this is the scan mode we want, break out
+      break;
+    }
+  }
+#if ScandyCore_VERSION_MINOR >= 8 &&                                           \
+  (ScandyCore_VERSION_PATCH > 0 || ScandyCore_VERSION_AHEAD > 500)
+  status =
+    ScandyCoreManager.scandyCorePtr->getIScandyCoreConfiguration()->setScanMode(
+      scan_mode);
+#else
+  status = scandy::core::Status::UNKNOWN_LIBRARY_VERSION
+#endif
+
+  auto statusString = [self formatStatusError:status];
+  if (status == scandy::core::Status::SUCCESS) {
+    return resolve(statusString);
+  } else {
+    return reject(statusString, statusString, nil);
+  }
+}
+
 RCT_EXPORT_METHOD(setSize
                   : (float)size resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
