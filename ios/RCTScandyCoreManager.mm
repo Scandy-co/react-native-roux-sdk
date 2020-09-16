@@ -368,6 +368,15 @@ RCT_EXPORT_METHOD(getV2ScanningEnabled
     });
 }
 
+RCT_EXPORT_METHOD(checkHasLiDAR
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  bool lidar = [ScandyCoreManager hasLiDAR];
+  NSNumber* hasLiDAR = [NSNumber numberWithBool:lidar];
+  resolve(hasLiDAR);
+}
+
 RCT_EXPORT_METHOD(toggleV2Scanning
                   : (NSNumber* _Nonnull)_enabled resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
