@@ -340,13 +340,31 @@ RCT_EXPORT_METHOD(generateMesh
     });
 }
 
+
 RCT_EXPORT_METHOD(saveScan
-                  : (NSString*)file_path resolve
+                  : (NSString*)file_path
+                  : (NSDictionary*)_meshExportOptions resolver
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        auto status = [ScandyCore saveMesh:file_path];
+        NSDictionary* meshExportOptions = _meshExportOptions;
+        scandy::core::MeshExportOptions opts;
+
+        if (meshExportOptions[@"scale"]) {
+            auto scale_name = meshExportOptions[@"scale"];
+          NSDictionary* scaleValues = [[NSDictionary alloc] initWithObjectsAndKeys:@"1000", @"mm", @"100", @"cm", @"1", @"m", @"39.3701", @"in", nil];
+            auto scale_value = scaleValues[scale_name];
+            if (scale_value == nil){
+                return reject(@"", @"Invalid value for scale. Valid options are: mm, cm, m, in", nil);
+            } else {
+                opts.m_scale = [scale_value floatValue];
+            }
+        }
+        
+        opts.m_dst_file_path = [file_path UTF8String];
+        
+        auto status = [ScandyCoreManager exportMesh:opts];
         auto statusString = [self formatStatusError:status];
         if (status == scandy::core::Status::SUCCESS) {
             return resolve(statusString);
@@ -355,6 +373,7 @@ RCT_EXPORT_METHOD(saveScan
         }
     });
 }
+
 
 RCT_EXPORT_METHOD(getV2ScanningEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
