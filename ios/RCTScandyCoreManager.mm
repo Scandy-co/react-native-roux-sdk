@@ -820,6 +820,47 @@ RCT_EXPORT_METHOD(applyEditsFromMeshViewport
     }
 }
 
+RCT_EXPORT_METHOD(optimizeMeshSize
+                  : (double)max_size resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ScandyCoreStatus status = ScandyCoreStatus::SUCCESS;
+        auto mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
+        NSLog(@"Initial mesh size: %fMB", mesh_size);
+
+        if(mesh_size > max_size){
+            // Auto clean
+            [ScandyCore extractLargestSurface:1.0];
+            [ScandyCore applyEditsFromMeshViewport:true];
+            
+            //Initial light decimate
+            [ScandyCore decimateMesh:0.2];
+            [ScandyCore applyEditsFromMeshViewport:true];
+        }
+
+        
+        mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
+        NSLog(@"Post-initial clean mesh size: %fMB", mesh_size);
+        while(mesh_size > max_size && status == ScandyCoreStatus::SUCCESS){
+            NSLog(@"Mesh is > 24MB(%fMB). Decimating 60 percent...", mesh_size);
+            status = [ScandyCore decimateMesh:0.6];
+            status = [ScandyCore applyEditsFromMeshViewport:true];
+            mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
+        }
+        
+        auto statusString = [self formatStatusError:status];
+        if (status == ScandyCoreStatus::SUCCESS) {
+            resolve(@{
+                @"mesh_size" : [NSNumber numberWithInt:mesh_size],
+                    });
+        } else {
+            reject(statusString, statusString, nil);
+        }
+    });
+}
+
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
