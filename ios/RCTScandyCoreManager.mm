@@ -845,7 +845,7 @@ RCT_EXPORT_METHOD(optimizeMeshSize
         mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
         NSLog(@"Post-initial clean mesh size: %fMB", mesh_size);
         while(mesh_size > max_size && status == ScandyCoreStatus::SUCCESS){
-            auto decimate_estimate = (max_size/mesh_size) * 1.05;
+            auto decimate_estimate = 1 - (max_size/mesh_size);
             decimate_estimate = fmin(decimate_estimate, 0.6);
             decimate_estimate = fmax(decimate_estimate, 0.05);
             NSLog(@"Mesh is > 24MB(%fMB). Decimating %f...", mesh_size, decimate_estimate);
