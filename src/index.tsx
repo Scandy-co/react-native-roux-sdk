@@ -264,6 +264,7 @@ type RouxType = {
   extractLargestSurface(min_percent: number): Promise<any>;
   makeWaterTight(depth: number): Promise<any>;
   applyEditsFromMeshViewport(apply_changes: boolean): Promise<any>;
+  optimizeMeshSize(max_size: number): Promise<any>;
 };
 
 // const { RouxSdk } = NativeModules;
