@@ -835,8 +835,9 @@ RCT_EXPORT_METHOD(optimizeMeshSize
             [ScandyCore extractLargestSurface:1.0];
             [ScandyCore applyEditsFromMeshViewport:true];
             
+            NSLog(@"Decimating 0.01");
             //Initial light decimate
-            [ScandyCore decimateMesh:0.2];
+            [ScandyCore decimateMesh:0.01];
             [ScandyCore applyEditsFromMeshViewport:true];
         }
 
@@ -844,9 +845,12 @@ RCT_EXPORT_METHOD(optimizeMeshSize
         mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
         NSLog(@"Post-initial clean mesh size: %fMB", mesh_size);
         while(mesh_size > max_size && status == ScandyCoreStatus::SUCCESS){
-            NSLog(@"Mesh is > 24MB(%fMB). Decimating 60 percent...", mesh_size);
-            status = [ScandyCore decimateMesh:0.6];
-            status = [ScandyCore applyEditsFromMeshViewport:true];
+            auto decimate_estimate = (max_size/mesh_size) * 1.05;
+            decimate_estimate = fmin(decimate_estimate, 0.6);
+            decimate_estimate = fmax(decimate_estimate, 0.05);
+            NSLog(@"Mesh is > 24MB(%fMB). Decimating %f...", mesh_size, decimate_estimate);
+            status = [ScandyCore decimateMesh:decimate_estimate];
+            [ScandyCore applyEditsFromMeshViewport:true];
             mesh_size = ScandyCoreManager.scandyCorePtr->getMeshMemorySize();
         }
         
