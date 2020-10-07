@@ -155,7 +155,7 @@ Generates mesh from the most recent scan session.
 
 #### `saveScan(destination: string, options: object): Promise<RouxStatusString>`
 
-Saves the generated mesh to the device. Mesh model is
+Saves the generated mesh to the device. Options is required, but can be empty object. Default model scale is meters.
 
 **Parameters**
 
