@@ -162,8 +162,8 @@ Saves the generated mesh to the device. Options is required, but can be empty ob
 - **destination**: string
   Path of file. Supported extensions: `.obj`, `.ply`, `.stl`, `.glb`, `.fbx`, `.draco`. If no extension is found, the mesh will be saved as a `PLY` by default.
 - **options**: object
-  - **scale** (optional): string
-    desired model scale. possible values: `mm`, `cm`, `m`, `in`
+  - **scale** (optional): int || RouxScale
+    desired model scale. possible RouxScale values: `Roux.scale.mm`, `Roux.scale.cm`, `Roux.scale.m`, `Roux.scale.in`
 
 #### `loadMesh(details: object): Promise<RouxStatusString>`
 
