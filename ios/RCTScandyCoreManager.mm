@@ -44,6 +44,22 @@ RCTScandyCoreManager ()
 
 RCT_EXPORT_MODULE(ScandyCoreManager);
 
+NSDictionary* scaleValues =
+  [[NSDictionary alloc] initWithObjectsAndKeys:@"1000",
+                                               @"mm",
+                                               @"100",
+                                               @"cm",
+                                               @"1",
+                                               @"m",
+                                               @"39.3701",
+                                               @"in",
+                                               nil];
+
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"scale": scaleValues };
+}
+
 + (void)setLicense
 {
   [ScandyCore setLicense];
@@ -361,22 +377,11 @@ RCT_EXPORT_METHOD(saveScan
     scandy::core::MeshExportOptions opts;
 
     if (meshExportOptions[@"scale"]) {
-      auto scale_name = meshExportOptions[@"scale"];
-      NSDictionary* scaleValues =
-        [[NSDictionary alloc] initWithObjectsAndKeys:@"1000",
-                                                     @"mm",
-                                                     @"100",
-                                                     @"cm",
-                                                     @"1",
-                                                     @"m",
-                                                     @"39.3701",
-                                                     @"in",
-                                                     nil];
-      auto scale_value = scaleValues[scale_name];
+      auto scale_value = meshExportOptions[@"scale"];
       if (scale_value == nil) {
         return reject(
           @"",
-          @"Invalid value for scale. Valid options are: mm, cm, m, in",
+          @"Invalid value for scale. Scale must be an integer or Roux.scale.mm, Roux.scale.cm, Roux.scale.m, or Roux.scale.in.",
           nil);
       } else {
         opts.m_scale = [scale_value floatValue];
