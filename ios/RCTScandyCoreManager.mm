@@ -385,7 +385,7 @@ RCT_EXPORT_METHOD(saveScan
 
     if (meshExportOptions[@"scale"]) {
       auto scale_value = meshExportOptions[@"scale"];
-      if (scale_value == nil) {
+      if (![scale_value intValue]) {
         return reject(
           @"",
           @"Invalid value for scale. Scale must be an integer or Roux.scale.mm, Roux.scale.cm, Roux.scale.m, or Roux.scale.in.",
