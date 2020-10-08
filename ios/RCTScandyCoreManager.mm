@@ -44,6 +44,13 @@ RCTScandyCoreManager ()
 
 RCT_EXPORT_MODULE(ScandyCoreManager);
 
+// scaleValues equivalent to js object: 
+// {
+//  "mm": 1000,
+//  "cm": 100,
+//  "m": 1,
+//  "in": 39.3701
+// }
 NSDictionary* scaleValues =
   [[NSDictionary alloc] initWithObjectsAndKeys:@"1000",
                                                @"mm",
