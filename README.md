@@ -48,7 +48,7 @@ const result = await Roux.setSize(voxelSize * 1e-3); // set size needs meters, s
 const result = await Roux.startScan();
 const result = await Roux.stopScan();
 const result = await Roux.generateMesh();
-const result = await Roux.saveScan(destination);
+const result = await Roux.saveScan(destination, {options});
 const result = await Roux.loadMesh({ meshPath, texturePath });
 
 // Editing mesh
@@ -153,14 +153,17 @@ Stops scanning.
 
 Generates mesh from the most recent scan session.
 
-#### `saveScan(destination: string): Promise<RouxStatusString>`
+#### `saveScan(destination: string, options: object): Promise<RouxStatusString>`
 
-Saves the generated mesh to the device
+Saves the generated mesh to the device. Options is required, but can be empty object. Default model scale is meters.
 
 **Parameters**
 
 - **destination**: string
   Path of file. Supported extensions: `.obj`, `.ply`, `.stl`, `.glb`, `.fbx`, `.draco`. If no extension is found, the mesh will be saved as a `PLY` by default.
+- **options**: object
+  - **scale** (optional): int || RouxScale
+    desired model scale. possible RouxScale values: `Roux.scale.mm`, `Roux.scale.cm`, `Roux.scale.m`, `Roux.scale.in`
 
 #### `loadMesh(details: object): Promise<RouxStatusString>`
 
