@@ -12,20 +12,19 @@
 
 #include <scandy/utilities/eigen_vector_math.h>
 
-#include <scandy/core/IScandyCore.h>
 #include <scandy/core/Status.h>
 #include <scandy/core/visualizer/MeshViewport.h>
 
 // import must come second
 
-#import "ScanView.h"
 #import "RCTScandyCoreView.h"
+#import "ScanView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
-#import <React/RCTUtils.h>
 #import <React/RCTUIManagerUtils.h>
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <ScandyCore/ScandyCore.h>
 #import <ScandyCore/ScandyCoreManager.h>
@@ -45,10 +44,10 @@ RCTScandyCoreView ()<ScandyCoreDelegate>
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
-RCT_EXPORT_VIEW_PROPERTY(onPreviewStart, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onScannerStart, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onScannerReady, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onScannerStop, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onStartPreview, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onStartScanning, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onInitializeScanner, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onStopScanning, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGenerateMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSaveMesh, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadMesh, RCTBubblingEventBlock);
@@ -68,19 +67,22 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 
 - (NSString*)formatScanStateToString:(scandy::core::ScanState)scanState
 {
-  return [NSString stringWithFormat:@"%s", scandy::core::getScanStateString(scanState).c_str()];
+  return [NSString
+    stringWithFormat:@"%s",
+                     scandy::core::getScanStateString(scanState).c_str()];
 }
 
 - (NSString*)formatStatusError:(scandy::core::Status)status
 {
-  return [NSString stringWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
+  return [NSString
+    stringWithFormat:@"%s", scandy::core::getStatusString(status).c_str()];
 }
 
 - (void)onVisualizerReady:(bool)createdVisualizer
 {
-  // NSLog(@"onVisualizerReady, created %@", createdVisualizer ? @"YES" : @"NO");
-  // NOTE: we can't use this because it gets called back before we finish
-  // setting self.scanView = [ScanView init] and therefor we have no
+  // NSLog(@"onVisualizerReady, created %@", createdVisualizer ? @"YES" :
+  // @"NO"); NOTE: we can't use this because it gets called back before we
+  // finish setting self.scanView = [ScanView init] and therefor we have no
   // self.scanView
   dispatch_after(
     dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
@@ -99,33 +101,20 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
       }
     });
 }
-- (void)onPreviewStart:(scandy::core::Status)status
+- (void)onStartPreview:(scandy::core::Status)status
 {
-  if (self.scanView.onPreviewStart) {
-    self.scanView.onPreviewStart(@{
+  if (self.scanView.onStartPreview) {
+    self.scanView.onStartPreview(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
       @"status" : [self formatStatusError:status]
     });
   }
 }
-- (void)onScannerStart:(scandy::core::Status)status
+- (void)onStartScanning:(scandy::core::Status)status
 {
-  if (self.scanView.onScannerStart) {
-    self.scanView.onScannerStart(@{
-      @"success" :
-        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
-      @"status" : [self formatStatusError:status]
-    });
-  }
-}
-
-- (void)onScannerReady:(scandy::core::Status)status
-{
-   NSLog(@"onScannerReady");
-
-  if (self.scanView.onScannerReady) {
-    self.scanView.onScannerReady(@{
+  if (self.scanView.onStartScanning) {
+    self.scanView.onStartScanning(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
       @"status" : [self formatStatusError:status]
@@ -133,12 +122,25 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-- (void)onScannerStop:(scandy::core::Status)status
+- (void)onInitializeScanner:(scandy::core::Status)status
 {
-  //  NSLog(@"onScannerStop");
+  NSLog(@"onInitializeScanner");
 
-  if (self.scanView.onScannerStop) {
-    self.scanView.onScannerStop(@{
+  if (self.scanView.onInitializeScanner) {
+    self.scanView.onInitializeScanner(@{
+      @"success" :
+        [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
+      @"status" : [self formatStatusError:status]
+    });
+  }
+}
+
+- (void)onStopScanning:(scandy::core::Status)status
+{
+  //  NSLog(@"onStopScanning");
+
+  if (self.scanView.onStopScanning) {
+    self.scanView.onStopScanning(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
       @"status" : [self formatStatusError:status]
@@ -164,6 +166,13 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   //  NSLog(@"onGenerateMesh");
 
   if (self.scanView.onGenerateMesh) {
+    dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+      dispatch_get_main_queue(),
+      ^{
+        [self.scanView render];
+      });
+
     self.scanView.onGenerateMesh(@{
       @"success" :
         [NSNumber numberWithBool:(status == scandy::core::Status::SUCCESS)],
@@ -180,7 +189,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-//This doesn't seem to be working right now - never gets triggered
+// This doesn't seem to be working right now - never gets triggered
 - (void)onClientConnected:(NSString*)host
 {
   //  NSLog(@"onClientConnected: %@", host);
@@ -189,7 +198,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
   }
 }
 
-//Doesn't seem to work - always returns 0.00
+// Doesn't seem to work - always returns 0.00
 - (void)onVolumeMemoryDidUpdate:(const float)percent_full
 {
   //  NSLog(@"onVolumeMemoryDidUpdate");
@@ -225,7 +234,7 @@ RCT_EXPORT_VIEW_PROPERTY(kind, NSString);
 - (UIView*)view
 {
   [ScandyCore setDelegate:self];
-  if( self.scanView ) {
+  if (self.scanView) {
     [self.scanView removeFromSuperview];
     self.scanView = nil;
   }

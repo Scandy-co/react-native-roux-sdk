@@ -1,6 +1,6 @@
 {
   "name": "react-native-roux-sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A React Native wrapper around the Roux 3D scanning SDK for iOS.  Provides access to 3D meshing, measuring, editing tools, etc.  https://scandy.co/apps/roux",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

@@ -4,9 +4,18 @@ A React Native wrapper around the Roux 3D scanning SDK for iOS. Provides access 
 
 ## Compatibility
 
-This react-native-roux-sdk is built to be used with `ScandyCore.framework` **v0.8.0**.
+This react-native-roux-sdk is built to be used with `ScandyCore.framework` **v1.0.0**.
 
 We are still working on version linking this react native package and the Roux SDK framework.
+
+## Breaking Changes
+
+The following callback functions have changed name:
+
+`onPreviewStart` -> `onStartPreview`
+`onScannerStart` -> `onStartScanning`
+`onScannerReady` -> `onInitializeScanner`
+`onScannerStop` -> `onStopScanning`
 
 ## Installation
 
@@ -93,10 +102,10 @@ import { RouxView } from 'react-native-roux-sdk';
   onVisualizerReady={() =>
     console.log('wait for this to fire, then setup the scan preview')
   }
-  onPreviewStart={this._onPreviewStart}
-  onScannerReady={this._onScannerReady}
-  onScannerStart={this._onScannerStart}
-  onScannerStop={this._onScannerStop}
+  onStartPreview={this._onStartPreview}
+  onInitializeScanner={this._onInitializeScanner}
+  onStartScanning={this._onStartScanning}
+  onStopScanning={this._onStopScanning}
   onGenerateMesh={this._onGenerateMesh}
   onSaveMesh={this._onSaveMesh}
   onHostDiscovered={this._onHostDiscovered}
@@ -296,10 +305,10 @@ Clears the list of hosts that we should receive commands from.
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | onScanStateChanged | Triggered when scan state changes. Returns the following scan states: `INITIALIZED`, `PREVIEWING`, `SCANNING`, `STOPPED`, `MESHING`, `VIEWING` |
 | onVisualizerReady  | Visualizer is ready to start initializing, previewing, etc                                                                                     |
-| onPreviewStart     | Preview has started rendering                                                                                                                  |
-| onScannerReady     | Scanner is ready to start                                                                                                                      |
-| onScannerStart     | Scanning has started                                                                                                                           |
-| onScannerStopped   | Scanning has stopped                                                                                                                           |
+| onStartPreview     | Preview has started rendering                                                                                                                  |
+| onInitializeScanner     | Scanner is ready to start                                                                                                                      |
+| onStartScanning     | Scanning has started                                                                                                                           |
+| onStopScanningped   | Scanning has stopped                                                                                                                           |
 | onGenerateMesh     | Mesh has been generated                                                                                                                        |
 | onSaveMesh         | Mesh has been saved                                                                                                                            |
 | onHostDiscovered   | Host (mirror device) has been discovered. Returns ip address of discovered host.                                                               |

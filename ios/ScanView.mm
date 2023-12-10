@@ -6,8 +6,6 @@
 //  Copyright © 2018 Scandy. All rights reserved.
 //
 
-#include <scandy/core/IScandyCore.h>
-
 #import "ScanView.h"
 
 @implementation ScanView

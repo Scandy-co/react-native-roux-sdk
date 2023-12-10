@@ -42,7 +42,7 @@ export default class App extends React.Component {
     }
   };
 
-  onScannerReady = async () => {
+  onInitializeScanner = async () => {
     if (!this.state.renderLoadedMesh) {
       try {
         await Roux.startPreview();
@@ -68,15 +68,15 @@ export default class App extends React.Component {
     }
   };
 
-  onPreviewStart = () => {
+  onStartPreview = () => {
     console.log('Preview Started');
   };
 
-  onScannerStart = () => {
+  onStartScanning = () => {
     console.log('Scanner Started');
   };
 
-  onScannerStop = async () => {
+  onStopScanning = async () => {
     try {
       await Roux.generateMesh();
     } catch (err) {
@@ -215,10 +215,10 @@ export default class App extends React.Component {
             style={styles.roux}
             onScanStateChanged={this.handleScanStateChanged}
             onVisualizerReady={this.initializeScanner}
-            onScannerReady={this.onScannerReady}
-            onPreviewStart={this.onPreviewStart}
-            onScannerStart={this.onScannerStart}
-            onScannerStop={this.onScannerStop}
+            onInitializeScanner={this.onInitializeScanner}
+            onStartPreview={this.onStartPreview}
+            onStartScanning={this.onStartScanning}
+            onStopScanning={this.onStopScanning}
             onGenerateMesh={this.onGenerateMesh}
             onSaveMesh={this.onSaveMesh}
             onLoadMesh={this.onLoadMesh}
